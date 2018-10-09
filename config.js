@@ -1,5 +1,10 @@
+var fs = require('fs');
 
 var BASE_DIR = __dirname+'/database/';
+
+if(!fs.existsSync(BASE_DIR)){
+    fs.mkdirSync(BASE_DIR);
+}
 
 var config = {
     httpEndPoint: 'http://api.eosmedi.com',
