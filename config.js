@@ -17,6 +17,7 @@ var config = {
         all_delegatebw: BASE_DIR+'all_delegatebw.log',
         vote_check_point_file: BASE_DIR+'fetched',
         stake_check_point_file: BASE_DIR+'delegatebw_fetched',
+        bot_watcher: BASE_DIR+'bot_watcher.json',
     }
 };
 
