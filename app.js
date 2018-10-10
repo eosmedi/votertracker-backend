@@ -625,9 +625,23 @@ app.get('/getVoter/:voter', function(req, res, next){
   var voter = req.params.voter;
   var voterData = getVoterInfo(voter, false);
   if(voterData && proxyinfoTable[voter]){
-      voterData.info = proxyinfoTable[voter];
+    voterData.info = proxyinfoTable[voter];
   }
-  res.json(voterData);
+
+  var data = Object.assign({}, voterData);
+  var voterIsProxy = proxyVoters[voter];
+  if(voterIsProxy){
+    var addLogsData = getVoterLogsInfo(proxyVoters[voter]["addLogs"]);
+    var removeLogsData = getVoterLogsInfo(proxyVoters[voter]["removeLogs"]);
+    data.addLogs = addLogsData.data;
+    data.removeLogs = removeLogsData.data;
+    data.total = {
+        add: addLogsData.total,
+        remove: removeLogsData.total,
+        diff: addLogsData.total - removeLogsData.total
+    }
+  }
+  res.json(data);
 });
 
 
@@ -980,6 +994,34 @@ function newVoterBlock(data, isTail){
   if(proxy && !data.producers.length){
       proxyVoters[proxy] = proxyVoters[proxy] || {};
       proxyVoters[proxy]["voters"] = proxyVoters[proxy]["voters"] || {};
+      proxyVoters[proxy]["addLogs"] = proxyVoters[proxy]["addLogs"] || [];
+      proxyVoters[proxy]["removeLogs"] = proxyVoters[proxy]["removeLogs"] || [];
+
+      var isFirstSetProxy = !proxyVoters[proxy]["voters"][voter];
+      if(isFirstSetProxy){
+
+        var firstVoteLog = proxyVoters[proxy]["addLogs"][0];
+          if(firstVoteLog && firstVoteLog.timestamp){
+              var lastTime = moment.utc(firstVoteLog.timestamp).utcOffset(moment().utcOffset()).unix();
+              var daysTime = moment().subtract(2, "days").unix();
+              if(lastTime < daysTime){
+                proxyVoters[proxy]["addLogs"].shift();
+              }
+          }
+
+          if(firstVoteLog && !firstVoteLog.timestamp){
+            proxyVoters[proxy]["addLogs"].shift();
+          }
+
+          proxyVoters[proxy]["addLogs"].push({
+              voter: voter,
+              block_num: block_num,
+              staked: voterStaked,
+              timestamp: timestamp
+		  });
+        
+      }
+
       proxyVoters[proxy]["voters"][voter] = proxyVoters[proxy]["voters"][voter] || 0;
       proxyVoters[proxy]["voters"][voter]++;
 	  voterProxy[voter] = proxy;
@@ -998,7 +1040,7 @@ function newVoterBlock(data, isTail){
   }
   
   if(proxy){
-      needUpdateVoterTable[proxy] = 1;
+    needUpdateVoterTable[proxy] = 1;
   }
 
   var voterIsProxy = proxyVoters[voter];
@@ -1015,8 +1057,30 @@ function newVoterBlock(data, isTail){
   }
 
   var lastProxy = voterProxy[voter];
+  var newProxyChanged = lastProxy && (!proxy || proxy != lastProxy);
 
-  if(lastProxy && !proxy){
+  // proxy changes
+  if(newProxyChanged){
+    var firstVoteLog = proxyVoters[lastProxy]["removeLogs"][0];
+    if(firstVoteLog && firstVoteLog.timestamp){
+        var lastTime = moment.utc(firstVoteLog.timestamp).utcOffset(moment().utcOffset()).unix();
+        var daysTime = moment().subtract(2, "days").unix();
+        if(lastTime < daysTime){
+            proxyVoters[lastProxy]["removeLogs"].shift();
+        }
+    }
+
+    if(firstVoteLog && !firstVoteLog.timestamp){
+        proxyVoters[lastProxy]["removeLogs"].shift();
+    }
+
+    proxyVoters[lastProxy]["removeLogs"].push({
+        voter: voter,
+        block_num: block_num,
+        timestamp: timestamp,
+        staked: voterStaked
+    });
+
 	if(isTail) {
 		botter.notify({
 			action: 'remove',
@@ -1027,8 +1091,9 @@ function newVoterBlock(data, isTail){
 			staked: voterStaked
 		});
 	}
-      delete proxyVoters[lastProxy]["voters"][voter];
-      delete voterProxy[voter];
+    delete proxyVoters[lastProxy]["voters"][voter];
+    // delete
+    if(!proxy) delete voterProxy[voter];
   }
 
   var detalProducers = [];
