@@ -22,3 +22,11 @@ var config = {
 
 module.exports = config;
 
+
+cp  /home/ubuntu/voter/votersInfo.json /home/ubuntu/votertracker-backend/database/
+cp  /home/ubuntu/voter/snapshot.json /home/ubuntu/votertracker-backend/database/
+cp  /home/ubuntu/voter/proxyInfo.json /home/ubuntu/votertracker-backend/database/
+cp  /home/ubuntu/voter/bpinfos.json /home/ubuntu/votertracker-backend/database/
+
+cp  /home/ubuntu/voter/voter.log /home/ubuntu/votertracker-backend/database/
+cp  /home/ubuntu/voter/all_delegatebw.log /home/ubuntu/votertracker-backend/database/
