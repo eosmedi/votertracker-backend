@@ -6,6 +6,8 @@ fs = require("fs"),
 moment = require('moment'),
 numCPUs = require('os').cpus().length;
 
+var searchApi = require('./search');
+
 app.disable('x-powered-by');
 
 var config = require('./config');
@@ -763,6 +765,7 @@ app.get('/getVoterStakeState', function(req, res, next){
 });
 
 
+app.get('/search', searchApi);
 
 
 app.get('/getVoteProxy', function(req, res, next){
