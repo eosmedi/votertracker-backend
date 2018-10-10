@@ -170,11 +170,6 @@ function loadVoterInfoFromFile(){
   }catch(e){}
 }
 
-fs.watch("./database.json", function(){
-  console.log("database change");
-  loadFromFile();
-  loadVoterData();
-})
 
 loadVoterInfoFromFile();
 
