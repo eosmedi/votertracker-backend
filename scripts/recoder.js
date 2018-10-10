@@ -151,6 +151,7 @@ process.on('SIGINT', function() {
     voteWriteStream.end();
     stakeWriteStream.end();
     console.log('Got SIGINT.  Press Control-D/Control-C to exit.');
+    process.exit();
 });
 
 listenBlock();
