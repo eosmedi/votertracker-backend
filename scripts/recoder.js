@@ -12,6 +12,7 @@ eos = EosApi({
 })
 
 var CHECK_POINT_FILE = config.database.vote_check_point_file;
+var STOPPED = false;
 
 if(!fs.existsSync(CHECK_POINT_FILE)){
     fs.writeFileSync(CHECK_POINT_FILE, '1');
@@ -23,8 +24,10 @@ var current = parseInt(fs.readFileSync(CHECK_POINT_FILE, "utf-8"));
 console.log("start fetch block from", current);
 
 function fetchBlock(){
+    if(STOPPED) return;
     // console.log('fetchBlock', current)
     eos.getBlock(current, (error, result) => {
+        if(STOPPED) return;
         if(!error){
             current++;
             try{
@@ -148,6 +151,7 @@ actionHanddler['undelegatebw'] = function(data, block){
 }
 
 process.on('SIGINT', function() {
+    STOPPED = true;
     voteWriteStream.end();
     stakeWriteStream.end();
     console.log('Got SIGINT.  Press Control-D/Control-C to exit.');
