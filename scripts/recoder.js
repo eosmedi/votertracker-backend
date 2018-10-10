@@ -1,5 +1,3 @@
-import { setTimeout } from 'timers';
-
 var EosApi = require('eosjs-api');
 var fs = require('fs');
 var config = require('../config.js');
