@@ -1,6 +1,7 @@
 var EosApi = require('eosjs-api');
 var fs = require('fs');
 var config = require('../config.js');
+const elasticWriteStream = require('../lib/elasticWriteStream');
 
 eos = EosApi({
     httpEndpoint: config.httpEndPoint,
@@ -17,6 +18,9 @@ if(!fs.existsSync(CHECK_POINT_FILE)){
 }
 
 var current = parseInt(fs.readFileSync(CHECK_POINT_FILE, "utf-8"));
+
+
+
 
 console.log("start fetch block from", current);
 
@@ -101,6 +105,9 @@ function getAccountData(account){
 var actionHanddler = {};
 
 
+var voteWriteStream = new elasticWriteStream(2, 'votetracker', 'vote');
+var stakeWriteStream = new elasticWriteStream(2, 'stake', 'stake');
+
 actionHanddler['voteproducer'] = function(data, block){
     var voter = data.voter;
     var producers = data.producers;
@@ -110,6 +117,9 @@ actionHanddler['voteproducer'] = function(data, block){
 
     getAccountData(voter).then(function(voterData){
         data.voterData = voterData;
+        var copy = Object.assign({}, data);
+        delete copy.voterData;
+        voteWriteStream.write(copy);
         fs.appendFileSync(config.database.voter_log, JSON.stringify(data)+"\n");
     }, function(err){
         console.log(err);
@@ -122,6 +132,7 @@ actionHanddler['voteproducer'] = function(data, block){
 actionHanddler['delegatebw'] = function(data, block){
     data.block_num = block.block_num;
     data.timestamp = block.timestamp;
+    stakeWriteStream.write(data);
     fs.appendFileSync(config.database.all_delegatebw, JSON.stringify(data)+"\n");
 }
 
@@ -129,8 +140,16 @@ actionHanddler['delegatebw'] = function(data, block){
 actionHanddler['undelegatebw'] = function(data, block){
     data.block_num = block.block_num;
     data.timestamp = block.timestamp;
+    stakeWriteStream.write(data);
     fs.appendFileSync(config.database.all_delegatebw, JSON.stringify(data)+"\n");
 }
+
+
+process.on('exit', function(code) {
+    voteWriteStream.end();
+    stakeWriteStream.end();
+    console.log('About to exit with code:', code);
+});
 
 
 listenBlock();
