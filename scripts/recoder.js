@@ -20,12 +20,10 @@ if(!fs.existsSync(CHECK_POINT_FILE)){
 var current = parseInt(fs.readFileSync(CHECK_POINT_FILE, "utf-8"));
 
 
-
-
 console.log("start fetch block from", current);
 
 function fetchBlock(){
-    console.log('fetchBlock', current)
+    // console.log('fetchBlock', current)
     eos.getBlock(current, (error, result) => {
         if(!error){
             current++;
@@ -36,10 +34,15 @@ function fetchBlock(){
                 console.log(e, JSON.stringify(result));
                 setTimeout(() => {
                     fetchBlock();
-                }, 10 * 1000);return;
+                }, 10 * 1000);
+                return;
             }
         }else{
-            console.log(error)
+            setTimeout(() => {
+                fetchBlock();
+            }, 3 * 1000);
+            return;
+            // console.log(error)
         }
         fetchBlock();
     })
