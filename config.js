@@ -9,6 +9,8 @@ var config = {
     elasticsearch: '127.0.0.1:9200',
     httpEndPoint: 'http://127.0.0.1:28888',
     database: {
+        voters_info: BASE_DIR+"votersInfo.json",
+        snapshot : BASE_DIR+'snapshot.json',
         proxy_info: BASE_DIR+'proxyInfo.json',
         voter_log: BASE_DIR+'voter.log',
         bpinfos: BASE_DIR+'bpinfos.json',

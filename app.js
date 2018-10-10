@@ -8,6 +8,7 @@ numCPUs = require('os').cpus().length;
 
 app.disable('x-powered-by');
 
+var config = require('./config');
 var compression = require('compression');
 var EosApi = require('eosjs-api');
 var Promise = require('promise');
@@ -25,7 +26,7 @@ var botter = new TelegramBoter();
 // }, 10  * 1000);
 
 eos = EosApi({
-  httpEndpoint: "https://api.eosmedi.com",
+  httpEndpoint: config.database.httpEndpoint,
   logger: {
   }
 })
@@ -74,8 +75,8 @@ var proxyVoters = {};
 var totalProxyedVotes = 0;
 
 var snapshotData = {};
-var tableFile = "bpinfos.json";
-var proxyTableFile = "proxyInfo.json";
+var tableFile = config.database.bpinfos;
+var proxyTableFile = config.database.proxy_info;
 
 var producerInfoTable = {};
 var tokenStats = {};
@@ -138,7 +139,7 @@ fs.watch(proxyTableFile, function(){
 
 
 try{
-  var _snapshotData = fs.readFileSync("snapshot.json", "utf-8");
+  var _snapshotData = fs.readFileSync(config.database.snapshot, "utf-8");
   snapshotData = JSON.parse(_snapshotData);
 }catch(e){
 }
@@ -161,7 +162,7 @@ function loadFromFile(){
 
 function loadVoterInfoFromFile(){
   try{
-      var _votersInfo = fs.readFileSync("votersInfo.json", "utf-8");
+      var _votersInfo = fs.readFileSync(config.database.voters_info, "utf-8");
       _votersInfo = JSON.parse(_votersInfo);
       if(_votersInfo){
           votersInfo = _votersInfo;
@@ -359,7 +360,7 @@ setInterval(function(){
   }
   console.log("votersInfo", Object.keys(votersInfo).length);
   console.log("allVoters",  Object.keys(allVoters).length);
-  fs.writeFileSync("votersInfo.json", JSON.stringify(votersInfo));
+  fs.writeFileSync(config.database.voters_info, JSON.stringify(votersInfo));
 }, 120 * 1000);
 
 
@@ -722,8 +723,13 @@ app.get('/getProducer/:producer', function(req, res, next){
 
 app.get('/getStatus', function(req, res, next){
   eos.getTableRows({
-      json: true, code: "eosio", scope: "eosio",
-      table: "global", table_key: "", limit: 1},
+      json: true, 
+      code: "eosio", 
+      scope: "eosio",
+      table: "global", 
+      table_key: "", 
+      limit: 1
+    },
   (error, result) => {
       var row = result.rows[0];
       var percent = (row.total_activated_stake / 1e4 /1000011818*100).toFixed(3);
@@ -907,7 +913,7 @@ liner.on('end', function(){
 Tail = require('tail').Tail;
 
 function initlizeLogWatcher(){
-  FILE_PATH = "./voter.log";
+  FILE_PATH = config.database.voter_log;
   var tail = new Tail(FILE_PATH);
 
   tail.on("line", function(data) {
@@ -1328,7 +1334,7 @@ function newStakeBlock(data){
 
 
 function initStakeWatcher(){
-  var FILE_PATH = "./all_delegatebw.log";
+  var FILE_PATH = config.database.all_delegatebw;
   var source = fs.createReadStream(FILE_PATH)
   var liner = new stream.Transform( { objectMode: true } )
   liner._transform = function (chunk, encoding, done) {
@@ -1385,4 +1391,3 @@ setTimeout(function(){
 
 app.use(compression());
 app.listen(8080);
-
