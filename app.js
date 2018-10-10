@@ -883,7 +883,7 @@ liner._flush = function (done) {
 }
 
 
-FILE_PATH = "./voter.log";
+FILE_PATH = config.database.voter_log;
 var source = fs.createReadStream(FILE_PATH)
 source.pipe(liner)
 
