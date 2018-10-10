@@ -147,12 +147,10 @@ actionHanddler['undelegatebw'] = function(data, block){
     fs.appendFileSync(config.database.all_delegatebw, JSON.stringify(data)+"\n");
 }
 
-
-process.on('exit', function(code) {
+process.on('SIGINT', function() {
     voteWriteStream.end();
     stakeWriteStream.end();
-    console.log('About to exit with code:', code);
+    console.log('Got SIGINT.  Press Control-D/Control-C to exit.');
 });
-
 
 listenBlock();
