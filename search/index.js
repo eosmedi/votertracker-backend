@@ -54,16 +54,16 @@ function searchApi(req, res, next){
             "_source": {
                 "excludes": []
             },
-            "aggs": {
-                "2": {
-                    "date_histogram": {
-                        "field": "timestamp",
-                        "interval": "1d",
-                        "time_zone": "Asia/Shanghai",
-                        "min_doc_count": 1
-                    }
-                }
-            },
+            // "aggs": {
+            //     "2": {
+            //         "date_histogram": {
+            //             "field": "timestamp",
+            //             "interval": "1d",
+            //             "time_zone": "Asia/Shanghai",
+            //             "min_doc_count": 1
+            //         }
+            //     }
+            // },
             "stored_fields": ["*"],
             "script_fields": {},
             "docvalue_fields": ["timestamp"],
@@ -81,17 +81,17 @@ function searchApi(req, res, next){
             queryStruct.from = from;
         }
 
-        var results = await client.search({
-            index: searchIndex,
-            body: queryStruct
-        });
-
-        // console.log(tabify(results));
-
-        res.json({
-            rows: tabify(results),
-            results: results
-        });
+        try{
+            var results = await client.search({
+                index: searchIndex,
+                body: queryStruct
+            });
+            res.json(results);
+        }catch(e){
+            res.json({
+                error: e
+            });
+        }
 
     })();
 
