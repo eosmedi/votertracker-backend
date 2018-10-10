@@ -108,8 +108,7 @@ function fetchProxyInfo(){
                 proxyInfoTable[key] = defaultInfo[key];
             }
         }
-    
-        console.log(proxyInfoTable);
+        // console.log(proxyInfoTable);
         fs.writeFileSync(config.database.proxy_info, JSON.stringify(proxyInfoTable));
     })
 }

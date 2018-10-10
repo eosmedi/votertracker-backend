@@ -4,19 +4,24 @@ var config = require('../config.js');
 
 eos = EosApi({
     httpEndpoint: config.httpEndPoint,
-   logger: {
-	error: null,
-	log: null
-   }
+    logger: {
+	    error: null,
+	    log: null
+    }
 })
 
 var CHECK_POINT_FILE = config.database.vote_check_point_file;
+
+if(!fs.existsSync(CHECK_POINT_FILE)){
+    fs.writeFileSync(CHECK_POINT_FILE, '1');
+}
 
 var current = parseInt(fs.readFileSync(CHECK_POINT_FILE, "utf-8"));
 
 console.log("start fetch block from", current);
 
 function fetchBlock(){
+    console.log('fetchBlock', current)
     eos.getBlock(current, (error, result) => {
         if(!error){
             current++;
@@ -30,7 +35,7 @@ function fetchBlock(){
                 }, 10 * 1000);return;
             }
         }else{
-            //console.log(error)
+            console.log(error)
         }
         fetchBlock();
     })
@@ -117,11 +122,14 @@ actionHanddler['voteproducer'] = function(data, block){
 actionHanddler['delegatebw'] = function(data, block){
     data.block_num = block.block_num;
     data.timestamp = block.timestamp;
+    fs.appendFileSync(config.database.all_delegatebw, JSON.stringify(data)+"\n");
 }
+
 
 actionHanddler['undelegatebw'] = function(data, block){
     data.block_num = block.block_num;
     data.timestamp = block.timestamp;
+    fs.appendFileSync(config.database.all_delegatebw, JSON.stringify(data)+"\n");
 }
 
 

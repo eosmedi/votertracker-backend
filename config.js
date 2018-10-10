@@ -1,5 +1,4 @@
 var fs = require('fs');
-
 var BASE_DIR = __dirname+'/database/';
 
 if(!fs.existsSync(BASE_DIR)){
@@ -7,7 +6,8 @@ if(!fs.existsSync(BASE_DIR)){
 }
 
 var config = {
-    httpEndPoint: 'http://api.eosmedi.com',
+    elasticsearch: '127.0.0.1:9200',
+    httpEndPoint: 'http://127.0.0.1:28888',
     database: {
         proxy_info: BASE_DIR+'proxyInfo.json',
         voter_log: BASE_DIR+'voter.log',

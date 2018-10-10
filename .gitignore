@@ -20,6 +20,5 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw*
-*.json*
 *.log*
 

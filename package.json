@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "elasticsearch": "^15.1.1",
+    "eosjs": "^16.0.9",
+    "eosjs-api": "^7.0.4",
+    "promise": "^8.0.2",
+    "request": "^2.88.0"
+  }
+}
