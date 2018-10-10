@@ -4,7 +4,6 @@ const processList = [
     'monitor.js',
     'proxy.js',
     'recoder.js',
-    'stake.js',
 ];
 
 
