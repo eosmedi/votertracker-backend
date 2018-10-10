@@ -1,3 +1,5 @@
+import { setTimeout } from 'timers';
+
 var EosApi = require('eosjs-api');
 var fs = require('fs');
 var config = require('../config.js');
@@ -151,7 +153,9 @@ process.on('SIGINT', function() {
     voteWriteStream.end();
     stakeWriteStream.end();
     console.log('Got SIGINT.  Press Control-D/Control-C to exit.');
-    process.exit();
+    setTimeout(() => {
+        process.exit();
+    }, 5 * 1000);
 });
 
 listenBlock();
