@@ -26,7 +26,7 @@ var botter = new TelegramBoter();
 // }, 10  * 1000);
 
 eos = EosApi({
-  httpEndpoint: config.httpEndpoint,
+  httpEndpoint: config.httpEndPoint,
   logger: {
   }
 })
