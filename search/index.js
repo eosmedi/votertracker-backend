@@ -8,6 +8,9 @@ function searchApi(req, res, next){
     var endTime = query.start_time;
     var searchIndex = query.search_type || 'vote*';
 
+    var size = query.size || 20;
+    var from  = query.from || 0;
+
     if(!keyword){
         return res.json({
             error: 'keyword can not be empty'
@@ -41,7 +44,7 @@ function searchApi(req, res, next){
 
         var queryStruct = {
             "version": true,
-            "size": 500,
+            "size": size,
             "sort": [{
                 "timestamp": {
                     "order": "desc",
@@ -74,6 +77,9 @@ function searchApi(req, res, next){
             }
         };
 
+        if(from){
+            queryStruct.from = from;
+        }
 
         var results = await client.search({
             index: searchIndex,
