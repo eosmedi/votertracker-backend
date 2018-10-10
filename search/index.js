@@ -71,17 +71,8 @@ function searchApi(req, res, next){
                     "should": [],
                     "must_not": []
                 }
-            },
-            "highlight": {
-                "pre_tags": ["@kibana-highlighted-field@"],
-                "post_tags": ["@/kibana-highlighted-field@"],
-                "fields": {
-                    "*": {}
-                },
-                "fragment_size": 2147483647
             }
         };
-
 
 
         var results = await client.search({
