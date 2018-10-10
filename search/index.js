@@ -86,10 +86,8 @@ function searchApi(req, res, next){
 
         var results = await client.search({
             index: searchIndex,
-            type: 'eos',
             body: queryStruct
         });
-
 
         // console.log(tabify(results));
 
