@@ -1377,20 +1377,27 @@ function newStakeBlock(data){
 
         var lastProxy = voterProxy[receiver];
 
-        var unstakeAmount = parseFloat(data.unstake_cpu_quantity) + parseFloat(data.unstake_net_quantity);
+        var stakeAmount = 0;
+
+        if(data.unstake_cpu_quantity){
+            stakeAmount = parseFloat(data.unstake_cpu_quantity) + parseFloat(data.unstake_net_quantity);
+        }
+
+        if(data.stake_cpu_quantity){
+            stakeAmount = parseFloat(data.stake_cpu_quantity) + parseFloat(data.stake_net_quantity);
+        }
+
         var unstakeLog = {
             action: action,
             voter: receiver,
-            staked: unstakeAmount,
+            staked: stakeAmount,
             block_num: data.block_num,
             timestamp: data.timestamp
         }
 
-
         console.log('stake log', unstakeLog);
-
         // proxy voter
-        if(!lastProxy){
+        if(lastProxy){
             proxyVoters[lastProxy]["stakeLogs"] = proxyVoters[lastProxy]["stakeLogs"] || [];
             if(proxyVoters[lastProxy]["stakeLogs"].length > 10){
                 proxyVoters[lastProxy]["stakeLogs"].shift();
