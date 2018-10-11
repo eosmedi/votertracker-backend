@@ -1386,6 +1386,9 @@ function newStakeBlock(data){
             timestamp: data.timestamp
         }
 
+
+        console.log('stake log', unstakeLog);
+
         // proxy voter
         if(!lastProxy){
             proxyVoters[lastProxy]["stakeLogs"] = proxyVoters[lastProxy]["stakeLogs"] || [];
@@ -1404,15 +1407,18 @@ function newStakeBlock(data){
                 if(votedProducers[producer]["stakeLogs"].length > 10){
                     votedProducers[producer]["stakeLogs"].shift();
                 }
-                votedProducers[producer]["stakeLogs"].push(unstakeLog)
+                votedProducers[producer]["stakeLogs"].push(unstakeLog);
+                console.log('stake log', producer, unstakeLog);
             })
+
+            
         }
+
 
 
         // proxyVoters[proxy]["stakeLogs"]
 		if(allVoters[receiver]){
 			var lastAllProducers = Object.keys(allVoters[receiver]['producers']);
-
 			var logTypes = {
 				stake: 'removeLogs',
 				unstake: 'addLogs'
