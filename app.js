@@ -996,7 +996,7 @@ function newVoterBlock(data, isTail){
       proxyVoters[proxy]["voters"] = proxyVoters[proxy]["voters"] || {};
       proxyVoters[proxy]["addLogs"] = proxyVoters[proxy]["addLogs"] || [];
       proxyVoters[proxy]["removeLogs"] = proxyVoters[proxy]["removeLogs"] || [];
-      proxyVoters[proxy]["unstakeLogs"] = proxyVoters[proxy]["unstakeLogs"] || [];
+      proxyVoters[proxy]["stakeLogs"] = proxyVoters[proxy]["stakeLogs"] || [];
 
       var isFirstSetProxy = !proxyVoters[proxy]["voters"][voter];
       if(isFirstSetProxy){
@@ -1110,7 +1110,7 @@ function newVoterBlock(data, isTail){
       votedProducers[producer]["addLogs"] = votedProducers[producer]["addLogs"] || [];
       votedProducers[producer]["removeLogs"] = votedProducers[producer]["removeLogs"] || [];
       votedProducers[producer]["cancelVoters"] = votedProducers[producer]["cancelVoters"] || [];
-      votedProducers[producer]["unstakeLogs"] = votedProducers[producer]["unstakeLogs"] || [];
+      votedProducers[producer]["stakeLogs"] = votedProducers[producer]["stakeLogs"] || [];
 
       var isNewVoter = !votedProducers[producer]["voters"][voter];
 
@@ -1372,43 +1372,42 @@ function newStakeBlock(data){
         }
         
         // track unstake logs
-        if(action == "unstake"){
 
-            var lastProxy = voterProxy[receiver];
+        var lastProxy = voterProxy[receiver];
 
-            var unstakeAmount = parseFloat(data.unstake_cpu_quantity) + parseFloat(data.unstake_net_quantity);
-            var unstakeLog = {
-                voter: receiver,
-                staked: unstakeAmount,
-                block_num: data.block_num,
-                timestamp: data.timestamp
-            }
-
-            // proxy voter
-            if(!lastProxy){
-                proxyVoters[lastProxy]["unstakeLogs"] = proxyVoters[lastProxy]["unstakeLogs"] || [];
-                if(proxyVoters[lastProxy]["unstakeLogs"].length > 10){
-                    proxyVoters[lastProxy]["unstakeLogs"].shift();
-                }
-                
-                proxyVoters[lastProxy]["unstakeLogs"].push(unstakeLog);
-            }
-            
-            // votedProducer
-            if(allVoters[receiver]){
-                var lastAllProducers = Object.keys(allVoters[receiver]['producers']);
-                lastAllProducers.forEach(function(producer){
-                    votedProducers[producer]["unstakeLogs"] = votedProducers[producer]["unstakeLogs"] || [];
-                    if(votedProducers[producer]["unstakeLogs"].length > 10){
-                        votedProducers[producer]["unstakeLogs"].shift();
-                    }
-                    votedProducers[producer]["unstakeLogs"].push(unstakeLog)
-                })
-            }
-
+        var unstakeAmount = parseFloat(data.unstake_cpu_quantity) + parseFloat(data.unstake_net_quantity);
+        var unstakeLog = {
+            action: action,
+            voter: receiver,
+            staked: unstakeAmount,
+            block_num: data.block_num,
+            timestamp: data.timestamp
         }
 
-        // proxyVoters[proxy]["unstakeLogs"]
+        // proxy voter
+        if(!lastProxy){
+            proxyVoters[lastProxy]["stakeLogs"] = proxyVoters[lastProxy]["stakeLogs"] || [];
+            if(proxyVoters[lastProxy]["stakeLogs"].length > 10){
+                proxyVoters[lastProxy]["stakeLogs"].shift();
+            }
+            
+            proxyVoters[lastProxy]["stakeLogs"].push(unstakeLog);
+        }
+        
+        // votedProducer
+        if(allVoters[receiver]){
+            var lastAllProducers = Object.keys(allVoters[receiver]['producers']);
+            lastAllProducers.forEach(function(producer){
+                votedProducers[producer]["stakeLogs"] = votedProducers[producer]["stakeLogs"] || [];
+                if(votedProducers[producer]["stakeLogs"].length > 10){
+                    votedProducers[producer]["stakeLogs"].shift();
+                }
+                votedProducers[producer]["stakeLogs"].push(unstakeLog)
+            })
+        }
+
+
+        // proxyVoters[proxy]["stakeLogs"]
 		if(allVoters[receiver]){
 			var lastAllProducers = Object.keys(allVoters[receiver]['producers']);
 
