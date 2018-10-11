@@ -635,6 +635,7 @@ app.get('/getVoter/:voter', function(req, res, next){
     var removeLogsData = getVoterLogsInfo(proxyVoters[voter]["removeLogs"]);
     data.addLogs = addLogsData.data;
     data.removeLogs = removeLogsData.data;
+    data.stakeLogs = proxyVoters[voter]["stakeLogs"];
     data.total = {
         add: addLogsData.total,
         remove: removeLogsData.total,
@@ -722,6 +723,7 @@ app.get('/getProducer/:producer', function(req, res, next){
           bpinfo: producerInfoTable[producer],
           cancelVoters: votedProducers[data.owner]["cancelVoters"],
           removeLogs: removeLogsData.data,
+          stakeLogs: votedProducers[data.owner]["stakeLogs"],
           total: {
               add: addLogsData.total,
               remove: removeLogsData.total,
