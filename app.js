@@ -797,9 +797,9 @@ app.get('/getVoteProxy', function(req, res, next){
     }
     if(type == 'reg'){
         return item.info;
-    }else{
-        return true;
     }
+
+    return true;
   });
 
   var rows = pagination(page, size, data);
