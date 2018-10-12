@@ -787,15 +787,29 @@ app.get('/search', searchApi);
 app.get('/getVoteProxy', function(req, res, next){
   var page = req.query.p || 1;
   var size = req.query.size || 50;
+  var type = req.query.reg || 'reg';
+
   var data = getVoters(proxyVoters, true);
+  data = data.filter((item) => {
+    var proxyName = item.account_name;
+    if(proxyinfoTable[proxyName]){
+        item.info = proxyinfoTable[proxyName];
+    }
+    if(type == 'reg'){
+        return item.info;
+    }else{
+        return true;
+    }
+  });
+
   var rows = pagination(page, size, data);
 
-  rows.forEach(function(data){
-      var proxyName = data.account_name;
-      if(proxyinfoTable[proxyName]){
-          data.info = proxyinfoTable[proxyName];
-      }
-  })
+//   rows.forEach(function(data){
+//       var proxyName = data.account_name;
+//       if(proxyinfoTable[proxyName]){
+//           data.info = proxyinfoTable[proxyName];
+//       }
+//   })
 
   res.json({
       rows: rows,
