@@ -1007,6 +1007,58 @@ function newVoterBlock(data, isTail){
   }else{
   }
 
+
+    // order
+  var lastProxy = voterProxy[voter];
+  var newProxyChanged =  lastProxy && (!proxy || proxy != lastProxy || data.producers.length);
+
+  console.log('proxyChange', newProxyChanged, voter, lastProxy, proxy);
+
+  // proxy changes
+  if(newProxyChanged){
+    try{
+
+        var firstVoteLog = proxyVoters[lastProxy]["removeLogs"][0];
+        if(firstVoteLog && firstVoteLog.timestamp){
+            var lastTime = moment.utc(firstVoteLog.timestamp).utcOffset(moment().utcOffset()).unix();
+            var daysTime = moment().subtract(2, "days").unix();
+            if(lastTime < daysTime){
+                proxyVoters[lastProxy]["removeLogs"].shift();
+            }
+        }
+
+        if(firstVoteLog && !firstVoteLog.timestamp){
+            proxyVoters[lastProxy]["removeLogs"].shift();
+        }
+
+        proxyVoters[lastProxy]["removeLogs"].push({
+            voter: voter,
+            block_num: block_num,
+            timestamp: timestamp,
+            staked: voterStaked
+        });
+
+        if(isTail) {
+            botter.notify({
+                action: 'remove',
+                proxy: proxy,
+                voter: voter,
+                block_num: block_num,
+                timestamp: timestamp,
+                staked: voterStaked
+            });
+        }
+    }catch(e){
+        console.log('proxyChange error', e);
+    }
+  
+    
+    delete proxyVoters[lastProxy]["voters"][voter];
+    // delete
+    if(!proxy) delete voterProxy[voter];
+  }
+
+
   if(proxy && !data.producers.length){
       proxyVoters[proxy] = proxyVoters[proxy] || {};
       proxyVoters[proxy]["voters"] = proxyVoters[proxy]["voters"] || {};
@@ -1073,58 +1125,8 @@ function newVoterBlock(data, isTail){
       }
   }
 
-  var lastProxy = voterProxy[voter];
+ 
 
-  var newProxyChanged =  lastProxy && (!proxy || proxy != lastProxy || data.producers.length);
-
-
-  console.log('proxyChange', newProxyChanged, voter, lastProxy, proxy);
-
-  // proxy changes
-  if(newProxyChanged){
-    try{
-
-        var firstVoteLog = proxyVoters[lastProxy]["removeLogs"][0];
-        if(firstVoteLog && firstVoteLog.timestamp){
-            var lastTime = moment.utc(firstVoteLog.timestamp).utcOffset(moment().utcOffset()).unix();
-            var daysTime = moment().subtract(2, "days").unix();
-            if(lastTime < daysTime){
-                proxyVoters[lastProxy]["removeLogs"].shift();
-            }
-        }
-
-        if(firstVoteLog && !firstVoteLog.timestamp){
-            proxyVoters[lastProxy]["removeLogs"].shift();
-        }
-
-        proxyVoters[lastProxy]["removeLogs"].push({
-            voter: voter,
-            block_num: block_num,
-            timestamp: timestamp,
-            staked: voterStaked
-        });
-
-        if(isTail) {
-            botter.notify({
-                action: 'remove',
-                proxy: proxy,
-                voter: voter,
-                block_num: block_num,
-                timestamp: timestamp,
-                staked: voterStaked
-            });
-        }
-    }catch(e){
-        console.log('proxyChange error', e);
-    }
-
-
-  
-    
-    delete proxyVoters[lastProxy]["voters"][voter];
-    // delete
-    if(!proxy) delete voterProxy[voter];
-  }
 
   var detalProducers = [];
   var lastAllProducers = Object.keys(allVoters[voter]['producers']);
