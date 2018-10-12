@@ -787,7 +787,7 @@ app.get('/search', searchApi);
 app.get('/getVoteProxy', function(req, res, next){
   var page = req.query.p || 1;
   var size = req.query.size || 50;
-  var type = req.query.type || 'reg';
+  var type = req.query.type || 'all';
 
   var data = getVoters(proxyVoters, true);
   data = data.filter((item) => {
