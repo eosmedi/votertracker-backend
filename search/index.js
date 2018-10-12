@@ -5,7 +5,7 @@ function searchApi(req, res, next){
     var keyword = req.query.keyword;
     var query = req.query;
     var startTime = query.start_time;
-    var endTime = query.start_time;
+    var endTime = query.end_time;
     var searchIndex = query.search_type || 'vote*';
 
     var size = query.size || 20;
