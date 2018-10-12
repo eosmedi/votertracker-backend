@@ -1077,6 +1077,9 @@ function newVoterBlock(data, isTail){
 
   var newProxyChanged =  lastProxy && (!proxy || proxy != lastProxy || data.producers.length);
 
+
+  console.log('proxyChange', newProxyChanged, voter, lastProxy, proxy);
+
   // proxy changes
   if(newProxyChanged){
     try{
@@ -1116,7 +1119,7 @@ function newVoterBlock(data, isTail){
     }
 
 
-    console.log('proxyChange', voter, lastProxy, proxy);
+  
     
     delete proxyVoters[lastProxy]["voters"][voter];
     // delete
