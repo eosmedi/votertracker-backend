@@ -993,7 +993,7 @@ function newVoterBlock(data, isTail){
 
   var voterData = data.voterData;
   var voterStaked = 0;
-  if(voterData){
+  if(voterData && voterData.voter_info){
     voterStaked = voterData.voter_info.staked;
   }
 
@@ -1080,6 +1080,7 @@ function newVoterBlock(data, isTail){
   // proxy changes
   if(newProxyChanged){
     try{
+
         var firstVoteLog = proxyVoters[lastProxy]["removeLogs"][0];
         if(firstVoteLog && firstVoteLog.timestamp){
             var lastTime = moment.utc(firstVoteLog.timestamp).utcOffset(moment().utcOffset()).unix();
@@ -1113,6 +1114,9 @@ function newVoterBlock(data, isTail){
     }catch(e){
         console.log('proxyChange error', e);
     }
+
+
+    console.log('proxyChange', voter, lastProxy, proxy);
     
     delete proxyVoters[lastProxy]["voters"][voter];
     // delete

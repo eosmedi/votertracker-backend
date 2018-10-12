@@ -1,21 +1,27 @@
 
 
 var EosApi = require('eosjs-api');
+var request = require('request-promise');
 
 eos = EosApi({
   httpEndpoint: 'https://mainnet.meet.one',
   logger: {
   }
-})
+});
 
 
-
-var proxy = 'eostitanvote';
-var voters = ["heztaojqg4ge", "titanexplore", "eosmechanics", "systemzaxeos", "eostitansign", "heztknygenes", "heytanigenes", "geytmmjwgige", "ge4dgobtgyge", "geytkmbvgene", "haztgnztgene", "gy2dcoigenes", "eostitanramm", "eostitandapp", "eostitanprod", "ge3tkmrzgyge", "haydqmjyhage", "gi4tsobrgene", "itokenpocket", "g44tanbtgqge", "g44domzsgqge", "rockandblues", "ge3denjygqge", "gyzdkmryguge", "gy2dcmbuhege", "prajrrv32kxw", "hhilyquerida"];
 
 (async () => {
-    for (let index = 0; index < voters.length; index++) {
-        const voter = voters[index];
+
+    var proxy = 'cannonproxy1';
+    var proxyData = await request.get('https://api.tallymeter.io/getVoter/'+proxy);
+
+    proxyData = JSON.parse(proxyData);
+
+    console.log(proxyData)
+    
+    for (let index = 0; index < proxyData.proxy_voters.length; index++) {
+        const voter = proxyData.proxy_voters[index];
         var account = await eos.getAccount({
             account_name: voter
         });
