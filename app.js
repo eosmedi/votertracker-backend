@@ -1074,40 +1074,46 @@ function newVoterBlock(data, isTail){
   }
 
   var lastProxy = voterProxy[voter];
-  var newProxyChanged = lastProxy && (!proxy || proxy != lastProxy);
+
+  var newProxyChanged =  lastProxy && (!proxy || proxy != lastProxy || data.producers.length);
 
   // proxy changes
   if(newProxyChanged){
-    var firstVoteLog = proxyVoters[lastProxy]["removeLogs"][0];
-    if(firstVoteLog && firstVoteLog.timestamp){
-        var lastTime = moment.utc(firstVoteLog.timestamp).utcOffset(moment().utcOffset()).unix();
-        var daysTime = moment().subtract(2, "days").unix();
-        if(lastTime < daysTime){
+    try{
+        var firstVoteLog = proxyVoters[lastProxy]["removeLogs"][0];
+        if(firstVoteLog && firstVoteLog.timestamp){
+            var lastTime = moment.utc(firstVoteLog.timestamp).utcOffset(moment().utcOffset()).unix();
+            var daysTime = moment().subtract(2, "days").unix();
+            if(lastTime < daysTime){
+                proxyVoters[lastProxy]["removeLogs"].shift();
+            }
+        }
+
+        if(firstVoteLog && !firstVoteLog.timestamp){
             proxyVoters[lastProxy]["removeLogs"].shift();
         }
+
+        proxyVoters[lastProxy]["removeLogs"].push({
+            voter: voter,
+            block_num: block_num,
+            timestamp: timestamp,
+            staked: voterStaked
+        });
+
+        if(isTail) {
+            botter.notify({
+                action: 'remove',
+                proxy: proxy,
+                voter: voter,
+                block_num: block_num,
+                timestamp: timestamp,
+                staked: voterStaked
+            });
+        }
+    }catch(e){
+        console.log('proxyChange error', e);
     }
-
-    if(firstVoteLog && !firstVoteLog.timestamp){
-        proxyVoters[lastProxy]["removeLogs"].shift();
-    }
-
-    proxyVoters[lastProxy]["removeLogs"].push({
-        voter: voter,
-        block_num: block_num,
-        timestamp: timestamp,
-        staked: voterStaked
-    });
-
-	if(isTail) {
-		botter.notify({
-			action: 'remove',
-			proxy: proxy,
-			voter: voter,
-			block_num: block_num,
-			timestamp: timestamp,
-			staked: voterStaked
-		});
-	}
+    
     delete proxyVoters[lastProxy]["voters"][voter];
     // delete
     if(!proxy) delete voterProxy[voter];
