@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Socket Stream</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.min.js"></script>
+</head>
+<body>
+
+    <div id="app">
+        <ul>
+            <li v-for="log in logs">{{ log }}</li>
+        </ul>
+    </div>
+<script>
+
+var app = new Vue({
+    data: function () {
+        return {
+            logs: []
+        }
+    },
+    mounted: function () {
+        var socket = io('https://api.tallymeter.io');
+        socket.on('log', (log) => {
+            console.log('log', log);
+           this.logs.push(log);
+        })
+    },
+}).$mount('#app');
+</script>
+
+
+
+</body>
+</html>
