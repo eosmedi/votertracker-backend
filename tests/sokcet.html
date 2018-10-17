@@ -15,7 +15,57 @@
             <li v-for="log in logs">{{ log }}</li>
         </ul>
     </div>
+
 <script>
+
+var ready = false;
+if (Notification.permission == "granted") {
+    ready = true;
+}else{
+    Notification.requestPermission().then(function(result) {
+        console.log(result);
+        ready = true;
+    });
+}
+
+
+function senNotify(log){
+    var type = 'producer';
+    if(log.proxy) type = 'proxy';
+    var typeValue = log[type];
+    var voterStaked = log.staked / 10000;
+
+    if(log.lastRank){
+        var message = typeValue+" rank changed from "+log.lastRank +" to "+log.rank;
+    }else if(log.type){
+        console.log('notify', log.type);
+    }else{
+        var message = [
+            log.voter+' -> ',
+                type == 'producer' ?
+                    log.action ==  "add" ? '[vote producer] -> ' : '[remove producer] -> ' :
+                log.action ==  "add" ? '[set proxy] -> ' : '[remove proxy] -> ',
+            '['+typeValue+']',
+            "staked="+(log.staked / 10000).toFixed(2)+' EOS'
+        ].join(" ");
+        console.log(message)
+    }
+
+    var notification = new Notification("change", {
+        body: message
+    });
+    
+    notification.onclick = function() {
+        notification.close();    
+    };
+
+
+    setTimeout(() => {
+        notification.close();   
+    },  3000);
+    console.log(message)
+}
+
 
 var app = new Vue({
     data: function () {
@@ -27,7 +77,8 @@ var app = new Vue({
         var socket = io('https://api.tallymeter.io');
         socket.on('log', (log) => {
             console.log('log', log);
-           this.logs.push(log);
+            senNotify(log);
+            this.logs.push(log);
         })
     },
 }).$mount('#app');
