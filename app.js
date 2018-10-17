@@ -1,10 +1,12 @@
-var express = require('express'),
-app = express(),
+var app = require('express')();
 cluster = require('cluster'),
 os = require("os"),
 fs = require("fs"),
 moment = require('moment'),
 numCPUs = require('os').cpus().length;
+
+
+var server = require('http').createServer(app);
 
 var searchApi = require('./search');
 
@@ -16,7 +18,7 @@ var EosApi = require('eosjs-api');
 var Promise = require('promise');
 var TelegramBoter = require('./lib/bot.js');
 
-var botter = new TelegramBoter();
+var botter = new TelegramBoter(server);
 // setInterval(() => {
 //     botter.notify({
 //         producer: 'eosfishrocks',
@@ -1535,4 +1537,4 @@ setTimeout(function(){
 }, 30 * 1000)
 
 app.use(compression());
-app.listen(8080);
+server.listen(8080);
