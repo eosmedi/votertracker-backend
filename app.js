@@ -1295,7 +1295,7 @@ function newVoterBlock(data, isTail){
 var voterStakeState = {};
 var globalStakeState = {};
 
-function newStakeBlock(data){
+function newStakeBlock(data, isTail){
   data = JSON.parse(data);
 
   var receiver = data.receiver;
@@ -1435,6 +1435,13 @@ function newStakeBlock(data){
             }
             
             proxyVoters[lastProxy]["stakeLogs"].push(unstakeLog);
+
+            if(isTail){
+                botter.notify(Object.assign({}, unstakeLog,  {
+                    type: 'stake',
+                    proxy: lastProxy
+                }));
+            }
         }
         
         // votedProducer
@@ -1446,6 +1453,12 @@ function newStakeBlock(data){
                     votedProducers[producer]["stakeLogs"].shift();
                 }
                 votedProducers[producer]["stakeLogs"].push(unstakeLog);
+                if(isTail){
+                    botter.notify(Object.assign({}, unstakeLog,  {
+                        type: 'stake',
+                        producer: producer
+                    }));
+                }
                 console.log('stake log', producer, unstakeLog);
             })
 
@@ -1520,7 +1533,7 @@ function initStakeWatcher(){
   tail.on("line", function(data) {
       console.log("tail new", FILE_PATH, data);
       try{
-          newStakeBlock(data);
+          newStakeBlock(data, true);
       }catch(e){
           console.log("newStakeBlock", "error", e)
       }
