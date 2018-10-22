@@ -88,6 +88,8 @@ var producerInfoTable = {};
 var tokenStats = {};
 var stakedLogs = [];
 
+var stakeLogsLimit = 60;
+
 
 function updateCurrencyStats(){
   eos.getCurrencyStats({
@@ -1438,14 +1440,27 @@ function newStakeBlock(data, isTail){
         }
 
         console.log('stake log', unstakeLog);
+
+        
+        var needNotifyProducers = [];
+
         // proxy voter
         if(lastProxy){
             proxyVoters[lastProxy]["stakeLogs"] = proxyVoters[lastProxy]["stakeLogs"] || [];
-            if(proxyVoters[lastProxy]["stakeLogs"].length > 10){
+            if(proxyVoters[lastProxy]["stakeLogs"].length > stakeLogsLimit){
                 proxyVoters[lastProxy]["stakeLogs"].shift();
             }
             
             proxyVoters[lastProxy]["stakeLogs"].push(unstakeLog);
+            
+            // proxy voted producers
+            if(allVoters[lastProxy]){
+                var proxyVotedProducers = Object.keys(allVoters[lastProxy]['producers']);
+                unstakeLog.proxy = lastProxy;
+                if(proxyVotedProducers.length){
+                    needNotifyProducers = needNotifyProducers.concat(proxyVotedProducers);
+                }
+            }
 
             if(isTail){
                 botter.notify(Object.assign({}, unstakeLog,  {
@@ -1458,24 +1473,33 @@ function newStakeBlock(data, isTail){
         // votedProducer
         if(allVoters[receiver]){
             var lastAllProducers = Object.keys(allVoters[receiver]['producers']);
-            lastAllProducers.forEach(function(producer){
-                votedProducers[producer]["stakeLogs"] = votedProducers[producer]["stakeLogs"] || [];
-                if(votedProducers[producer]["stakeLogs"].length > 10){
-                    votedProducers[producer]["stakeLogs"].shift();
-                }
-                votedProducers[producer]["stakeLogs"].push(unstakeLog);
-                if(isTail){
-                    botter.notify(Object.assign({}, unstakeLog,  {
-                        type: 'stake',
-                        producer: producer
-                    }));
-                }
-                console.log('stake log', producer, unstakeLog);
-            })
-
-            
+            if(lastAllProducers.length){
+                lastAllProducers = needNotifyProducers.concat(lastAllProducers);
+            }
         }
 
+
+        var notifyedProducers = {};
+
+        needNotifyProducers.forEach(function(producer){
+            if(notifyedProducers[producer]){
+                return;
+            }
+            votedProducers[producer]["stakeLogs"] = votedProducers[producer]["stakeLogs"] || [];
+            if(votedProducers[producer]["stakeLogs"].length > stakeLogsLimit){
+                votedProducers[producer]["stakeLogs"].shift();
+            }
+            votedProducers[producer]["stakeLogs"].push(unstakeLog);
+            if(isTail){
+                botter.notify(Object.assign({}, unstakeLog,  {
+                    type: 'stake',
+                    producer: producer
+                }));
+            }
+
+            notifyedProducers[producer] = 1;
+            console.log('stake log', producer, unstakeLog);
+        })
 
 
         // proxyVoters[proxy]["stakeLogs"]
