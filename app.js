@@ -17,8 +17,10 @@ var compression = require('compression');
 var EosApi = require('eosjs-api');
 var Promise = require('promise');
 var TelegramBoter = require('./lib/bot.js');
+var producerRankRecorder = require('./lib/producerRankHistory.js');
 
 var botter = new TelegramBoter(server);
+var producerRanker = new producerRankRecorder();
 // setInterval(() => {
 //     botter.notify({
 //         producer: 'eosfishrocks',
@@ -397,7 +399,16 @@ function swapProducerVoters(producers){
       }catch(e){
           console.log("reward remove", e)
       }
+
+      
+        var rankHistory = producerRanker.getRankHistory(row.owner);
+        row.history = rankHistory || [];
+
   })
+
+
+
+
 
 
   if(false){
