@@ -20,7 +20,7 @@ var TelegramBoter = require('./lib/bot.js');
 var producerRankRecorder = require('./lib/producerRankHistory.js');
 
 var botter = new TelegramBoter(server);
-var producerRanker = new producerRankRecorder();
+
 // setInterval(() => {
 //     botter.notify({
 //         producer: 'eosfishrocks',
@@ -89,6 +89,8 @@ var tokenStats = {};
 var stakedLogs = [];
 
 var stakeLogsLimit = 60;
+
+var producerRanker = new producerRankRecorder(votedProducers);
 
 
 function updateCurrencyStats(){
