@@ -1476,13 +1476,12 @@ function newStakeBlock(data, isTail){
         if(allVoters[receiver]){
             var lastAllProducers = Object.keys(allVoters[receiver]['producers']);
             if(lastAllProducers.length){
-                lastAllProducers = needNotifyProducers.concat(lastAllProducers);
+                needNotifyProducers = needNotifyProducers.concat(lastAllProducers);
             }
         }
 
 
         var notifyedProducers = {};
-
         
         console.log('stake log', unstakeLog, needNotifyProducers, 'lastAllProducers', lastAllProducers);
 
