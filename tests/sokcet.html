@@ -12,7 +12,10 @@
 
     <div id="app">
         <ul>
-            <li v-for="log in logs">{{ log }}</li>
+            <li v-for="log in logs">
+                {{ log.formated }}<br>
+                <!-- {{ log }} -->
+            </li>
         </ul>
     </div>
 
@@ -28,29 +31,63 @@ if (Notification.permission == "granted") {
     });
 }
 
+var messageTemplate = {
+    stake: `$(refType):$(to)'s voter $(voter) [$(action)] amount=$(staked) EOS \n\nhttps://votetracker.io`,
+    vote: `$(voter) [$(action) $(target)] ->  [$(to)] amount=$(stake) EOS \n\nView Details in  https://votetracker.io/#/$(link)/$(to)`,
+    rank: `$(producer) rank changed from $(lastRank) to $(rank) \n\nhttps://votetracker.io`,
+}
 
-function senNotify(log){
-    var type = 'producer';
-    if(log.proxy) type = 'proxy';
-    var typeValue = log[type];
-    var voterStaked = log.staked / 10000;
+function templateEngine(tpl, data) {
+    // console.log(tpl, data);
+    var re = /\$\(([^\)]+)?\)/g, match;
+    while(match = re.exec(tpl)) {
+        tpl = tpl.replace(match[0], data[match[1]])
+        re.lastIndex = 0;
+    }
+    return tpl;
+}
 
-    if(log.lastRank){
-        var message = typeValue+" rank changed from "+log.lastRank +" to "+log.rank;
-    }else if(log.type){
-        console.log('notify', log.type);
-    }else{
-        var message = [
-            log.voter+' -> ',
-                type == 'producer' ?
-                    log.action ==  "add" ? '[vote producer] -> ' : '[remove producer] -> ' :
-                log.action ==  "add" ? '[set proxy] -> ' : '[remove proxy] -> ',
-            '['+typeValue+']',
-            "staked="+(log.staked / 10000).toFixed(2)+' EOS'
-        ].join(" ");
-        console.log(message)
+function getNotifyMessage(log){
+    var template = "";
+    if(log.staked && !log.type){
+        log.stake = (log.staked / 10000).toFixed(2);
+    }
+    if(log.type){
+        if(log.producer && log.proxy){
+            log.refType = 'proxy';
+            log.to = log.proxy;
+        }else if(log.producer){
+            log.refType = 'producer';
+            log.to = log.producer;
+        }else if(log.proxy){
+            log.refType = 'proxy';
+            log.to = log.proxy;
+        }
+        template = messageTemplate.stake;
+    }else if(log.lastRank){
+        template = messageTemplate.rank;
+    }else if(log.producer || log.proxy){
+        var type = 'producer';
+        log.to = log.producer;
+        log.link = 'producer';
+        if(log.proxy){
+            type = 'proxy';
+            log.to = log.proxy;
+            log.link = 'voter';
+        }
+        log.target = type;
+        template = messageTemplate.vote;
     }
 
+    if(template){
+        return templateEngine(template, log);
+    }else{
+        return template;
+    }
+}
+
+function senNotify(log){
+    var message = getNotifyMessage(log);
     var notification = new Notification("change", {
         body: message
     });
@@ -77,7 +114,8 @@ var app = new Vue({
         var socket = io('https://api.tallymeter.io');
         socket.on('log', (log) => {
             console.log('log', log);
-            senNotify(log);
+            senNotify(Object.assign({}, log));
+            log.formated = getNotifyMessage(Object.assign({}, log));
             this.logs.push(log);
         })
     },

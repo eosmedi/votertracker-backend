@@ -1441,7 +1441,7 @@ function newStakeBlock(data, isTail){
             timestamp: data.timestamp
         }
 
-        console.log('stake log', unstakeLog);
+        
 
         
         var needNotifyProducers = [];
@@ -1482,6 +1482,9 @@ function newStakeBlock(data, isTail){
 
 
         var notifyedProducers = {};
+
+        
+        console.log('stake log', unstakeLog, needNotifyProducers, 'lastAllProducers', lastAllProducers);
 
         needNotifyProducers.forEach(function(producer){
             if(notifyedProducers[producer]){
