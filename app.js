@@ -1483,7 +1483,7 @@ function newStakeBlock(data, isTail){
 
         var notifyedProducers = {};
         
-        console.log('stake log', unstakeLog, needNotifyProducers, 'lastAllProducers', lastAllProducers);
+        console.log('stake log', unstakeLog, needNotifyProducers);
 
         needNotifyProducers.forEach(function(producer){
             if(notifyedProducers[producer]){
