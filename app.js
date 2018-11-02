@@ -515,8 +515,12 @@ function getVoters(allVoters, isProxy) {
   var arr = [];
 
   voters.forEach(element => {
-      var cacheData = votersInfo[element];
-      if(cacheData) arr.push(getVoterInfo(element, true));
+        var cacheData = votersInfo[element];
+        if(cacheData) {
+            var vinfo = getVoterInfo(element, true);
+            vinfo.last_vote_time = allVoters[element];
+            arr.push(vinfo);
+        }
   });
 
   arr.sort(function(i1,i2){
@@ -1182,8 +1186,8 @@ function newVoterBlock(data, isTail){
 
       var isNewVoter = !votedProducers[producer]["voters"][voter];
 
-      votedProducers[producer]["voters"][voter] = votedProducers[producer]["voters"][voter] || 0;
-      votedProducers[producer]["voters"][voter]++;
+      votedProducers[producer]["voters"][voter] = timestamp;
+    //   votedProducers[producer]["voters"][voter]++;
 
       if(!votedProducers[producer]["voters"][voter]){
           votedProducers[producer]["totalStaked"] += voterStaked;
