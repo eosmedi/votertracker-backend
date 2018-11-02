@@ -760,7 +760,8 @@ app.get('/getProducer/:producer/voters', function(req, res, next){
             data: voterData.map((d) => {
                 return {
                     voter: d.account_name,
-                    staked: d.voter_info ? d.voter_info.staked : 0
+                    staked: d.voter_info ? d.voter_info.staked : 0,
+                    is_proxy: d.voter_info ? d.voter_info.is_proxy : 0
                 }
             })
         });
