@@ -599,6 +599,7 @@ function getVoterInfo(voter, missLoadCache){
 
       proxyAllVoters.forEach(function(proxyVoter){
           var proxyVoterInfo = votersInfo[proxyVoter];
+          var timestamp = proxyVoters[voter]["voters"][proxyVoter];
           if(!proxyVoterInfo){
               needUpdateVoterTable[proxyVoter] = 1;
               console.log("proxyVoter info miss", proxyVoter, Date.now())
@@ -616,7 +617,8 @@ function getVoterInfo(voter, missLoadCache){
           proxyStacked += stakedEos;
           allVotersProxy.push({
               voter: proxyVoter,
-              staked: stakedEos
+              staked: stakedEos,
+              timestamp: timestamp
           })
       })
 
@@ -1126,8 +1128,8 @@ function newVoterBlock(data, isTail){
         
       }
 
-      proxyVoters[proxy]["voters"][voter] = proxyVoters[proxy]["voters"][voter] || 0;
-      proxyVoters[proxy]["voters"][voter]++;
+      proxyVoters[proxy]["voters"][voter] = timestamp;
+    //   proxyVoters[proxy]["voters"][voter]++;
 	  voterProxy[voter] = proxy;
 	  
 	    if(isTail) {
