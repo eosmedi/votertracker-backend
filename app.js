@@ -750,6 +750,23 @@ app.get('/getProducer/:producer', function(req, res, next){
   }
 });
 
+app.get('/getProducer/:producer/voters', function(req, res, next){
+    var producer = req.params.producer;
+    if(allProducersMap[producer]){
+        var data = allProducersMap[producer];
+        var voterData = getVoters(votedProducers[data.owner]['voters']);
+        
+        res.json({
+            data: voterData.map((d) => {
+                return {
+                    voter: d.account_name,
+                    staked: d.voter_info ? d.voter_info.staked : 0
+                }
+            })
+        });
+    }
+});
+
 
 app.get('/getStatus', function(req, res, next){
   eos.getTableRows({
