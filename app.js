@@ -1189,6 +1189,9 @@ function newVoterBlock(data, isTail){
 
       var isNewVoter = !votedProducers[producer]["voters"][voter];
 
+      var actionName = isNewVoter ? 'add' : 'revote';
+      var lastVoteTime = isNewVoter ? isNewVoter : null;
+
       votedProducers[producer]["voters"][voter] = timestamp;
     //   votedProducers[producer]["voters"][voter]++;
 
@@ -1198,7 +1201,7 @@ function newVoterBlock(data, isTail){
 
       votedProducers[producer]["blocks"].push(data.block_num);
 
-      var actionName = isNewVoter ? 'add' : 'revote';
+    
 
     //   if(isNewVoter){
           var firstVoteLog = votedProducers[producer]["addLogs"][0];
@@ -1219,7 +1222,8 @@ function newVoterBlock(data, isTail){
               block_num: block_num,
               staked: voterStaked,
               timestamp: timestamp,
-              action: actionName
+              action: actionName,
+              last_time: lastVoteTime
 		  });
 		  
         if(isTail) {
@@ -1229,7 +1233,8 @@ function newVoterBlock(data, isTail){
                 voter: voter,
                 block_num: block_num,
                 timestamp: timestamp,
-                staked: voterStaked
+                staked: voterStaked,
+                last_time: lastVoteTime
             });
         }
 
