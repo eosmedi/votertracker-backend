@@ -88,7 +88,7 @@ var producerInfoTable = {};
 var tokenStats = {};
 var stakedLogs = [];
 
-var stakeLogsLimit = 60;
+var stakeLogsLimit = 100;
 
 var producerRanker = new producerRankRecorder(votedProducers);
 
@@ -1108,7 +1108,9 @@ function newVoterBlock(data, isTail){
       proxyVoters[proxy]["stakeLogs"] = proxyVoters[proxy]["stakeLogs"] || [];
 
       var isFirstSetProxy = !proxyVoters[proxy]["voters"][voter];
-      if(isFirstSetProxy){
+
+      var actionNameP = isFirstSetProxy ? 'add' : 'revote';
+    //   if(isFirstSetProxy){
 
         var firstVoteLog = proxyVoters[proxy]["addLogs"][0];
           if(firstVoteLog && firstVoteLog.timestamp){
@@ -1127,10 +1129,11 @@ function newVoterBlock(data, isTail){
               voter: voter,
               block_num: block_num,
               staked: voterStaked,
-              timestamp: timestamp
+              timestamp: timestamp,
+              action: actionNameP
 		  });
         
-      }
+    //   }
 
       proxyVoters[proxy]["voters"][voter] = timestamp;
     //   proxyVoters[proxy]["voters"][voter]++;
@@ -1138,7 +1141,7 @@ function newVoterBlock(data, isTail){
 	  
 	    if(isTail) {
 			botter.notify({
-				action: 'add',
+				action: actionNameP,
 				proxy: proxy,
 				voter: voter,
 				block_num: block_num,
@@ -1195,7 +1198,9 @@ function newVoterBlock(data, isTail){
 
       votedProducers[producer]["blocks"].push(data.block_num);
 
-      if(isNewVoter){
+      var actionName = isNewVoter ? 'add' : 'revote';
+
+    //   if(isNewVoter){
           var firstVoteLog = votedProducers[producer]["addLogs"][0];
           if(firstVoteLog && firstVoteLog.timestamp){
               var lastTime = moment.utc(firstVoteLog.timestamp).utcOffset(moment().utcOffset()).unix();
@@ -1213,21 +1218,22 @@ function newVoterBlock(data, isTail){
               voter: voter,
               block_num: block_num,
               staked: voterStaked,
-              timestamp: timestamp
+              timestamp: timestamp,
+              action: actionName
 		  });
 		  
-		  	if(isTail) {
-				botter.notify({
-					action: 'add',
-					producer: producer,
-					voter: voter,
-					block_num: block_num,
-					timestamp: timestamp,
-					staked: voterStaked
-				});
-			}
+        if(isTail) {
+            botter.notify({
+                action: actionName,
+                producer: producer,
+                voter: voter,
+                block_num: block_num,
+                timestamp: timestamp,
+                staked: voterStaked
+            });
+        }
 
-      }
+    //   }
 
       allVoters[voter]['producers'][producer] = allVoters[voter]['producers'][producer] || {};
       allVoters[voter]['producers'][producer]['blocks'] =  allVoters[voter]['producers'][producer]['blocks'] || [];
