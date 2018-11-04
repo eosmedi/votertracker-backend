@@ -1110,7 +1110,7 @@ function newVoterBlock(data, isTail){
       var isFirstSetProxy = !proxyVoters[proxy]["voters"][voter];
 
       var actionNameP = isFirstSetProxy ? 'add' : 'revote';
-      var lastSetTime = isFirstSetProxy ? isFirstSetProxy : null;
+      var lastSetTime = isFirstSetProxy ? proxyVoters[proxy]["voters"][voter] : null;
     //   if(isFirstSetProxy){
 
         var firstVoteLog = proxyVoters[proxy]["addLogs"][0];
@@ -1193,7 +1193,7 @@ function newVoterBlock(data, isTail){
       var isNewVoter = !votedProducers[producer]["voters"][voter];
 
       var actionName = isNewVoter ? 'add' : 'revote';
-      var lastVoteTime = isNewVoter ? isNewVoter : null;
+      var lastVoteTime = isNewVoter ? votedProducers[producer]["voters"][voter] : null;
 
       votedProducers[producer]["voters"][voter] = timestamp;
     //   votedProducers[producer]["voters"][voter]++;
