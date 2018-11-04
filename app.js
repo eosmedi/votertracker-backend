@@ -1110,6 +1110,7 @@ function newVoterBlock(data, isTail){
       var isFirstSetProxy = !proxyVoters[proxy]["voters"][voter];
 
       var actionNameP = isFirstSetProxy ? 'add' : 'revote';
+      var lastSetTime = isFirstSetProxy ? isFirstSetProxy : null;
     //   if(isFirstSetProxy){
 
         var firstVoteLog = proxyVoters[proxy]["addLogs"][0];
@@ -1130,7 +1131,8 @@ function newVoterBlock(data, isTail){
               block_num: block_num,
               staked: voterStaked,
               timestamp: timestamp,
-              action: actionNameP
+              action: actionNameP,
+              last_time: lastSetTime
 		  });
         
     //   }
@@ -1146,7 +1148,8 @@ function newVoterBlock(data, isTail){
 				voter: voter,
 				block_num: block_num,
 				timestamp: timestamp,
-				staked: voterStaked
+				staked: voterStaked,
+                last_time: lastSetTime
 			});
 		}
 
