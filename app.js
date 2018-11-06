@@ -1192,9 +1192,8 @@ function newVoterBlock(data, isTail){
 			if(lastSetTime){
 				weight_change = voteDecayDetal(voterStaked, lastSetTime, timestamp);
 				voterLog.diff_weight_change = diff_weight_change;
+				console.log('weight_change', weight_change);
 			}
-
-		
 
 			if(actionNameP == "revote" && weight_change > 0){
 				
