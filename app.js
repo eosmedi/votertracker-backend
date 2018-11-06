@@ -660,7 +660,7 @@ function getVoterInfo(voter, missLoadCache){
 			 var stakedEos = parseInt(proxyVoterInfo.voter_info.staked);
 			 var voterStakedFromSate = getVoterStakedFromLocalState(proxyVoter);
 			 if(voterStakedFromSate){
-				stakedEos = voterStakedFromSate.staked * 10000;
+				stakedEos = voterStakedFromSate.staked;
 			 }
 
          //  if(stakedFromSate){
@@ -959,7 +959,7 @@ function getProxyTotalVotes(voter){
             var stakedEos = parseInt(proxyVoterInfo.voter_info.staked);
             if(stakedFromSate){
                //  var totalStaked = stakedFromSate.cpu + stakedFromSate.net;
-                stakedEos = stakedFromSate.staked * 10000;
+                stakedEos = stakedFromSate.staked;
             }
             proxyStacked += stakedEos;
         })
