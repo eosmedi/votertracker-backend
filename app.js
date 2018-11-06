@@ -1194,13 +1194,38 @@ function newVoterBlock(data, isTail){
 				voterLog.diff_weight_change = weight_change;
 			}
 
-			if(actionNameP == "revote" && weight_change > 0){
+			if(actionNameP == "revote" ){
 				console.log('weight_change', weight_change);
-				proxyVoters[proxy]["addLogs"].push(voterLog);
+				if(weight_change > 0){
+					proxyVoters[proxy]["addLogs"].push(voterLog);
+					if(isTail) {
+						botter.notify({
+							action: actionNameP,
+							proxy: proxy,
+							voter: voter,
+							block_num: block_num,
+							timestamp: timestamp,
+							staked: voterStaked,
+							diff_weight_change: weight_change,
+							last_time: lastSetTime
+						});
+					}
+				}
 			}else{
 				proxyVoters[proxy]["addLogs"].push(voterLog);
+				if(isTail) {
+					botter.notify({
+						action: actionNameP,
+						proxy: proxy,
+						voter: voter,
+						block_num: block_num,
+						timestamp: timestamp,
+						staked: voterStaked,
+						diff_weight_change: weight_change,
+						last_time: lastSetTime
+					});
+				}
 			}
-          
         
     //   }
 
@@ -1208,18 +1233,7 @@ function newVoterBlock(data, isTail){
     //   proxyVoters[proxy]["voters"][voter]++;
 	  voterProxy[voter] = proxy;
 	  
-	    if(isTail) {
-			botter.notify({
-				action: actionNameP,
-				proxy: proxy,
-				voter: voter,
-				block_num: block_num,
-				timestamp: timestamp,
-				staked: voterStaked,
-				diff_weight_change: weight_change,
-            last_time: lastSetTime
-			});
-		}
+	    
 
   }
   
@@ -1305,25 +1319,37 @@ function newVoterBlock(data, isTail){
 				voterActionLog.diff_weight_change = vpweight_change;
 			}
 
-			if(actionName == "revote" && vpweight_change > 0){
-				console.log('weight_change', vpweight_change);
-				votedProducers[producer]["addLogs"].push(voterActionLog);
+			if(actionName == "revote"){
+				if(vpweight_change > 0){
+					votedProducers[producer]["addLogs"].push(voterActionLog);
+					if(isTail) {
+						botter.notify({
+							action: actionName,
+							producer: producer,
+							voter: voter,
+							block_num: block_num,
+							timestamp: timestamp,
+							staked: voterStaked,
+							diff_weight_change: vpweight_change,
+							last_time: lastVoteTime
+						});
+				  	}
+				}
 			}else{
 				votedProducers[producer]["addLogs"].push(voterActionLog);
+        		if(isTail) {
+					botter.notify({
+						action: actionName,
+						producer: producer,
+						voter: voter,
+						block_num: block_num,
+						timestamp: timestamp,
+						staked: voterStaked,
+						diff_weight_change: vpweight_change,
+						last_time: lastVoteTime
+					});
+			  }
 			}
-		  
-        	if(isTail) {
-            botter.notify({
-                action: actionName,
-                producer: producer,
-                voter: voter,
-                block_num: block_num,
-                timestamp: timestamp,
-					 staked: voterStaked,
-					 diff_weight_change: vpweight_change,
-                last_time: lastVoteTime
-            });
-        	}
 
     //   }
 
