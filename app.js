@@ -1192,11 +1192,10 @@ function newVoterBlock(data, isTail){
 			if(lastSetTime){
 				weight_change = voteDecayDetal(voterStaked, lastSetTime, timestamp);
 				voterLog.diff_weight_change = weight_change;
-				console.log('weight_change', weight_change);
 			}
 
 			if(actionNameP == "revote" && weight_change > 0){
-				
+				console.log('weight_change', weight_change);
 				proxyVoters[proxy]["addLogs"].push(voterLog);
 			}else{
 				proxyVoters[proxy]["addLogs"].push(voterLog);
@@ -1217,7 +1216,8 @@ function newVoterBlock(data, isTail){
 				block_num: block_num,
 				timestamp: timestamp,
 				staked: voterStaked,
-                last_time: lastSetTime
+				diff_weight_change: weight_change,
+            last_time: lastSetTime
 			});
 		}
 
@@ -1298,14 +1298,15 @@ function newVoterBlock(data, isTail){
 				last_time: lastVoteTime
 			};
 			 
-			var weight_change = 0;
+			var vpweight_change = 0;
 
 			if(lastVoteTime){
-				weight_change = voteDecayDetal(voterStaked, lastVoteTime, timestamp);
-				voterActionLog.diff_weight_change = weight_change;
+				vpweight_change = voteDecayDetal(voterStaked, lastVoteTime, timestamp);
+				voterActionLog.diff_weight_change = vpweight_change;
 			}
 
-			if(actionName == "revote" && weight_change > 0){
+			if(actionName == "revote" && vpweight_change > 0){
+				console.log('weight_change', weight_change);
 				votedProducers[producer]["addLogs"].push(voterActionLog);
 			}else{
 				votedProducers[producer]["addLogs"].push(voterActionLog);
@@ -1318,7 +1319,8 @@ function newVoterBlock(data, isTail){
                 voter: voter,
                 block_num: block_num,
                 timestamp: timestamp,
-                staked: voterStaked,
+					 staked: voterStaked,
+					 diff_weight_change: vpweight_change,
                 last_time: lastVoteTime
             });
         	}
