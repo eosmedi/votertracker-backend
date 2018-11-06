@@ -1306,7 +1306,7 @@ function newVoterBlock(data, isTail){
 			}
 
 			if(actionName == "revote" && vpweight_change > 0){
-				console.log('weight_change', weight_change);
+				console.log('weight_change', vpweight_change);
 				votedProducers[producer]["addLogs"].push(voterActionLog);
 			}else{
 				votedProducers[producer]["addLogs"].push(voterActionLog);
