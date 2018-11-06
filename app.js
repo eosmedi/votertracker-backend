@@ -1498,16 +1498,16 @@ function newStakeBlock(data, isTail){
       if(data.stake_cpu_quantity){
           voterStakeState[receiver]['cpu'] += parseFloat(data.stake_cpu_quantity);
 			 voterStakeState[receiver]['net'] += parseFloat(data.stake_net_quantity);
-			 voterStakeState[receiver]['total'] += stake_net_quantity;
-			 voterStakeState[receiver]['total'] += stake_cpu_quantity;
+			 voterStakeState[receiver]['total'] += parseFloat(data.stake_cpu_quantity);
+			 voterStakeState[receiver]['total'] += parseFloat(data.stake_net_quantity);
       }
 
       if(data.unstake_net_quantity){
           action = "unstake";
           voterStakeState[receiver]['cpu'] -= parseFloat(data.unstake_cpu_quantity);
 			 voterStakeState[receiver]['net'] -= parseFloat(data.unstake_net_quantity);
-			 voterStakeState[receiver]['total'] -= unstake_cpu_quantity;
-			 voterStakeState[receiver]['total'] -= unstake_net_quantity;
+			 voterStakeState[receiver]['total'] -= parseFloat(data.unstake_cpu_quantity);
+			 voterStakeState[receiver]['total'] -= parseFloat(data.unstake_net_quantity);
       }
 
       return;
@@ -1525,16 +1525,16 @@ function newStakeBlock(data, isTail){
       if(data.stake_cpu_quantity){
           voterStakeState[receiver]['cpu'] += parseFloat(data.stake_cpu_quantity);
 			 voterStakeState[receiver]['net'] += parseFloat(data.stake_net_quantity);
-			 voterStakeState[receiver]['total'] += stake_net_quantity;
-			 voterStakeState[receiver]['total'] += stake_cpu_quantity;
+			 voterStakeState[receiver]['total'] += parseFloat(data.stake_cpu_quantity);
+			 voterStakeState[receiver]['total'] += parseFloat(data.stake_net_quantity);
       }
 
       if(data.unstake_net_quantity){
           action = "unstake";
           voterStakeState[receiver]['cpu'] -= parseFloat(data.unstake_cpu_quantity);
 			 voterStakeState[receiver]['net'] -= parseFloat(data.unstake_net_quantity);
-			 voterStakeState[receiver]['total'] -= unstake_cpu_quantity;
-			 voterStakeState[receiver]['total'] -= unstake_net_quantity;
+			 voterStakeState[receiver]['total'] -= parseFloat(data.unstake_cpu_quantity);
+			 voterStakeState[receiver]['total'] -= parseFloat(data.unstake_net_quantity);
       }
 
       voterStakeState[receiver]['is_proxy_voter'] = voterProxy[receiver];
