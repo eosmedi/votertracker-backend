@@ -1408,8 +1408,8 @@ var globalStakeState = {};
 function newStakeBlock(data, isTail){
   data = JSON.parse(data);
 
- //   var receiver = data.receiver;
-  var receiver = data.from;
+  var receiver = data.receiver;
+//   var receiver = data.from;
   var isVoter = allVoters[receiver];
 
   if(!isVoter){
