@@ -596,16 +596,14 @@ app.get('/tryRefreshVoterInfo', function(req, res, next){
 });
 
 function getVoterStakedFromLocalState(voter){
-
 	var state = {};
-
 	var voterStakedFromSate = voterStakeState[voter];
 	if(voterStakedFromSate){
 		state = Object.assign(state, voterStakedFromSate);
 		var voterTotalStaked = voterStakedFromSate.total + voterStakedFromSate.to_others.total;
 		state.staked = voterTotalStaked * 10000;
+		return state;
 	}
-
 }
 
 
@@ -630,12 +628,16 @@ function getVoterInfo(voter, missLoadCache){
       votersInfo[voter].actions = [].concat(allVoters[voter]['actions']);
   }
 
-  var voterStakedFromSate = voterStakeState[voter];
-  if(cacheData && voterStakedFromSate){
+
+  var voterStakedFromSate = getVoterStakedFromLocalState(voter);
+
+  	// var voterStakedFromSate = voterStakeState[voter];
+  	if(cacheData && voterStakedFromSate){
 		var voterStakedEos = cacheData.voter_info.staked;
 		if(voterStakedFromSate){
-			var voterTotalStaked = voterStakedFromSate.cpu + voterStakedFromSate.net;
-			cacheData.voter_info.staked = voterTotalStaked * 10000;
+			// var voterTotalStaked = voterStakedFromSate.cpu + voterStakedFromSate.net;
+			// cacheData.voter_info.staked = voterTotalStaked * 10000;
+			cacheData.voter_info.staked = voterStakedFromSate.staked;
 		}
 	}
 
@@ -654,13 +656,17 @@ function getVoterInfo(voter, missLoadCache){
               return;
           }
 
-          var stakedFromSate = voterStakeState[proxyVoter];
-          var stakedEos = parseInt(proxyVoterInfo.voter_info.staked);
+         //  var stakedFromSate = voterStakeState[proxyVoter];
+			 var stakedEos = parseInt(proxyVoterInfo.voter_info.staked);
+			 var voterStakedFromSate = getVoterStakedFromLocalState(proxyVoter);
+			 if(voterStakedFromSate){
+				stakedEos = voterStakedFromSate.staked * 10000;
+			 }
 
-          if(stakedFromSate){
-              var totalStaked = stakedFromSate.cpu + stakedFromSate.net;
-              stakedEos = totalStaked * 10000;
-          }
+         //  if(stakedFromSate){
+         //      var totalStaked = stakedFromSate.cpu + stakedFromSate.net;
+         //      stakedEos = totalStaked * 10000;
+         //  }
 
           proxyStacked += stakedEos;
           allVotersProxy.push({
@@ -948,11 +954,12 @@ function getProxyTotalVotes(voter){
                 return;
             }
 
-            var stakedFromSate = voterStakeState[proxyVoter];
+				// var stakedFromSate = voterStakeState[proxyVoter];
+				var stakedFromSate = getVoterStakedFromLocalState(proxyVoter);
             var stakedEos = parseInt(proxyVoterInfo.voter_info.staked);
             if(stakedFromSate){
-                var totalStaked = stakedFromSate.cpu + stakedFromSate.net;
-                stakedEos = totalStaked * 10000;
+               //  var totalStaked = stakedFromSate.cpu + stakedFromSate.net;
+                stakedEos = stakedFromSate.staked * 10000;
             }
             proxyStacked += stakedEos;
         })
