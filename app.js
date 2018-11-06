@@ -73,6 +73,26 @@ function getAccountData(account){
   })
 }
 
+
+function voteDecayDetal(stake, lastTime, time){
+    if(typeof lastTime == "string"){
+        lastTime = moment.utc(lastTime);
+    }
+
+    if(typeof time == "string"){
+        time = moment.utc(time);
+    }
+
+    var lastWeight = calculateVoteWeight(lastTime);
+    var lastVotesWeight = stake * lastWeight;
+    var nowWeight = calculateVoteWeight(time);
+    var nowVotesweight = stake * nowWeight;
+    var voteDecayDetal = (nowVotesweight - lastVotesWeight) / lastVotesWeight * 100;
+    // console.log(nowVotesweight - lastVotesWeight, lastVotesWeight, lastWeight, nowWeight)
+    return parseFloat(voteDecayDetal.toFixed(2))
+}
+
+
 var votedProducers = {};
 var allVoters = {};
 var votersInfo = {};
@@ -1126,14 +1146,27 @@ function newVoterBlock(data, isTail){
             proxyVoters[proxy]["addLogs"].shift();
           }
 
-          proxyVoters[proxy]["addLogs"].push({
-              voter: voter,
-              block_num: block_num,
-              staked: voterStaked,
-              timestamp: timestamp,
-              action: actionNameP,
-              last_time: lastSetTime
-		  });
+         var weight_change = 0;
+
+			if(lastSetTime){
+				weight_change = voteDecayDetal(voterStaked, lastSetTime, timestamp);
+			}
+
+			var voterLog = {
+				voter: voter,
+				block_num: block_num,
+				staked: voterStaked,
+				timestamp: timestamp,
+				action: actionNameP,
+				last_time: lastSetTime
+			}
+
+			if(actionNameP == "revote" && weight_change > 0){
+				proxyVoters[proxy]["addLogs"].push(voterLog);
+			}else{
+				proxyVoters[proxy]["addLogs"].push(voterLog);
+			}
+          
         
     //   }
 
@@ -1219,17 +1252,30 @@ function newVoterBlock(data, isTail){
           if(firstVoteLog && !firstVoteLog.timestamp){
               votedProducers[producer]["addLogs"].shift();
           }
+				 
+			
+			 var voterActionLog = {
+				voter: voter,
+				block_num: block_num,
+				staked: voterStaked,
+				timestamp: timestamp,
+				action: actionName,
+				last_time: lastVoteTime
+			};
+			 
+			var weight_change = 0;
 
-          votedProducers[producer]["addLogs"].push({
-              voter: voter,
-              block_num: block_num,
-              staked: voterStaked,
-              timestamp: timestamp,
-              action: actionName,
-              last_time: lastVoteTime
-		  });
+			if(lastVoteTime){
+				weight_change = voteDecayDetal(voterStaked, lastVoteTime, timestamp);
+			}
+
+			if(actionName == "revote" && weight_change > 0){
+				votedProducers[producer]["addLogs"].push(voterActionLog);
+			}else{
+				votedProducers[producer]["addLogs"].push(voterActionLog);
+			}
 		  
-        if(isTail) {
+        	if(isTail) {
             botter.notify({
                 action: actionName,
                 producer: producer,
@@ -1239,7 +1285,7 @@ function newVoterBlock(data, isTail){
                 staked: voterStaked,
                 last_time: lastVoteTime
             });
-        }
+        	}
 
     //   }
 
@@ -1351,7 +1397,8 @@ var globalStakeState = {};
 function newStakeBlock(data, isTail){
   data = JSON.parse(data);
 
-  var receiver = data.receiver;
+ //   var receiver = data.receiver;
+  var receiver = data.from;
   var isVoter = allVoters[receiver];
 
   if(!isVoter){
