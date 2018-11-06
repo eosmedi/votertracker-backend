@@ -74,6 +74,17 @@ function getAccountData(account){
 }
 
 
+function calculateVoteWeight(date) {
+	if(typeof date == "string"){
+		 date = moment.utc(date);
+	}
+	date = date || Date.now();
+	var timestamp_epoch = 946684800000;
+	var dates_ = (date / 1000) - (timestamp_epoch / 1000);
+	var weight_ = Math.ceil(dates_ / (86400 * 7)) / 52;
+	return Math.pow(2, weight_);
+}
+
 function voteDecayDetal(stake, lastTime, time){
     if(typeof lastTime == "string"){
         lastTime = moment.utc(lastTime);
