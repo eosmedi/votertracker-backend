@@ -1441,8 +1441,10 @@ function newStakeBlock(data, isTail){
       globalStakeState["total_staked"] -= parseFloat(data.unstake_net_quantity);
   }
 
-  var unstake_cpu_quantity = 0, unstake_net_quantity = 0, 
-  		stake_cpu_quantity = 0, stake_net_quantity = 0;
+  var unstake_cpu_quantity = 0, 
+  			unstake_net_quantity = 0, 
+		  stake_cpu_quantity = 0, 
+		  stake_net_quantity = 0;
 
 
 	if(data.stake_cpu_quantity){
@@ -1450,7 +1452,7 @@ function newStakeBlock(data, isTail){
 		stake_net_quantity = parseFloat(data.stake_net_quantity);
 	}
 
-	if(data.unstake_net_quantity){{
+	if(data.unstake_net_quantity){
 		unstake_cpu_quantity = parseFloat(data.unstake_cpu_quantity);
   		unstake_net_quantity = parseFloat(data.unstake_cpu_quantity);
 	}
@@ -1458,34 +1460,27 @@ function newStakeBlock(data, isTail){
 
   var from = data.from;
   if(receiver != from){
-		voterStakeState[from] =  voterStakeState[from] || { 
-			cpu: 0, 
-			net: 0, 
-			total: 0,
-			to_others: { 
-				cpu: 0, 
-				net: 0,
-				total: 0
-			}
-		};
+		voterStakeState[from] =  voterStakeState[from] || { cpu: 0, net: 0, total: 0, to_others: { cpu: 0, net: 0, total: 0 } };
 
 		if(data.stake_cpu_quantity){
 			voterStakeState[from]['to_others']['cpu'] += stake_cpu_quantity;
 			voterStakeState[from]['to_others']['net'] += stake_net_quantity;
-			voterStakeState[from]['to_others']['total'] += (stake_net_quantity + stake_cpu_quantity);
+			voterStakeState[from]['to_others']['total'] += stake_net_quantity;
+			voterStakeState[from]['to_others']['total'] += stake_cpu_quantity;
 		}
 
 		if(data.unstake_net_quantity){
 			action = "unstake";
 			voterStakeState[from]['to_others']['cpu'] -= parseFloat(data.unstake_cpu_quantity);
 			voterStakeState[from]['to_others']['net'] -= parseFloat(data.unstake_net_quantity);
-			voterStakeState[from]['to_others']['total'] -= (unstake_cpu_quantity + unstake_net_quantity);
+			voterStakeState[from]['to_others']['total'] -= unstake_cpu_quantity;
+			voterStakeState[from]['to_others']['total'] -= unstake_net_quantity;
 		}
   }
 
 
   if(!isVoter){
-      voterStakeState[receiver] =  voterStakeState[receiver] || { cpu: 0, net: 0, total: 0 };
+      voterStakeState[receiver] =  voterStakeState[receiver] || { cpu: 0, net: 0, total: 0, to_others: { cpu: 0, net: 0, total: 0 }};
       var action = "stake";
       if(data.stake_cpu_quantity){
           voterStakeState[receiver]['cpu'] += parseFloat(data.stake_cpu_quantity);
@@ -1509,7 +1504,7 @@ function newStakeBlock(data, isTail){
 
       stakedLogs.push(data);
 
-      voterStakeState[receiver] =  voterStakeState[receiver] || { cpu: 0, net: 0, total: 0 };
+      voterStakeState[receiver] =  voterStakeState[receiver] || { cpu: 0, net: 0, total: 0, to_others: { cpu: 0, net: 0, total: 0 }};
 
       var action = "stake";
       if(data.stake_cpu_quantity){
