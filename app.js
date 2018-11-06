@@ -1177,13 +1177,8 @@ function newVoterBlock(data, isTail){
             proxyVoters[proxy]["addLogs"].shift();
           }
 
-         var weight_change = 0;
-
-			if(lastSetTime){
-				weight_change = voteDecayDetal(voterStaked, lastSetTime, timestamp);
-			}
-
-			var voterLog = {
+			
+			 var voterLog = {
 				voter: voter,
 				block_num: block_num,
 				staked: voterStaked,
@@ -1192,7 +1187,17 @@ function newVoterBlock(data, isTail){
 				last_time: lastSetTime
 			}
 
+         var weight_change = 0;
+
+			if(lastSetTime){
+				weight_change = voteDecayDetal(voterStaked, lastSetTime, timestamp);
+				voterLog.diff_weight_change = diff_weight_change;
+			}
+
+		
+
 			if(actionNameP == "revote" && weight_change > 0){
+				
 				proxyVoters[proxy]["addLogs"].push(voterLog);
 			}else{
 				proxyVoters[proxy]["addLogs"].push(voterLog);
@@ -1298,6 +1303,7 @@ function newVoterBlock(data, isTail){
 
 			if(lastVoteTime){
 				weight_change = voteDecayDetal(voterStaked, lastVoteTime, timestamp);
+				voterActionLog.diff_weight_change = diff_weight_change;
 			}
 
 			if(actionName == "revote" && weight_change > 0){
