@@ -631,16 +631,16 @@ function getVoterInfo(voter, missLoadCache){
 
   var voterStakedFromSate = getVoterStakedFromLocalState(voter);
 
-  	// var voterStakedFromSate = voterStakeState[voter];
-  	if(cacheData && voterStakedFromSate){
+    // var voterStakedFromSate = voterStakeState[voter];
+    if(cacheData && voterStakedFromSate){
         var voterStakedEos = cacheData.voter_info.staked;
         // make sure stake is  not negative
-		if(voterStakedFromSate && voterStakedFromSate.staked > 0){
-			// var voterTotalStaked = voterStakedFromSate.cpu + voterStakedFromSate.net;
-			// cacheData.voter_info.staked = voterTotalStaked * 10000;
-			cacheData.voter_info.staked = voterStakedFromSate.staked;
-		}
-	}
+        if(voterStakedFromSate && voterStakedFromSate.staked > 0){
+            // var voterTotalStaked = voterStakedFromSate.cpu + voterStakedFromSate.net;
+            // cacheData.voter_info.staked = voterTotalStaked * 10000;
+            cacheData.voter_info.staked = voterStakedFromSate.staked;
+        }
+    }
 
   var voterIsProxy = proxyVoters[voter];
   if(voterIsProxy){
@@ -658,14 +658,17 @@ function getVoterInfo(voter, missLoadCache){
           }
 
          //  var stakedFromSate = voterStakeState[proxyVoter];
-             var stakedEos = parseInt(proxyVoterInfo.voter_info.staked);
-             
-             // make sure stake is  not negative
-             
-			 var voterStakedFromSate = getVoterStakedFromLocalState(proxyVoter);
-			 if(voterStakedFromSate && voterStakedFromSate.staked > 0){
-				stakedEos = voterStakedFromSate.staked;
-			 }
+            var stakedEos = parseInt(proxyVoterInfo.voter_info.staked);
+            
+            // make sure stake is  not negative
+            var voterStakedFromSate = getVoterStakedFromLocalState(proxyVoter);
+            if(voterStakedFromSate && voterStakedFromSate.staked > 0){
+                stakedEos = voterStakedFromSate.staked;
+            }
+
+            if(stakedEos < 0){
+                stakedEos = parseInt(proxyVoterInfo.voter_info.staked);
+            }
 
          //  if(stakedFromSate){
          //      var totalStaked = stakedFromSate.cpu + stakedFromSate.net;
