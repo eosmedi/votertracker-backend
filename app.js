@@ -633,8 +633,9 @@ function getVoterInfo(voter, missLoadCache){
 
   	// var voterStakedFromSate = voterStakeState[voter];
   	if(cacheData && voterStakedFromSate){
-		var voterStakedEos = cacheData.voter_info.staked;
-		if(voterStakedFromSate){
+        var voterStakedEos = cacheData.voter_info.staked;
+        // make sure stake is negative
+		if(voterStakedFromSate && voterStakedFromSate.staked > 0){
 			// var voterTotalStaked = voterStakedFromSate.cpu + voterStakedFromSate.net;
 			// cacheData.voter_info.staked = voterTotalStaked * 10000;
 			cacheData.voter_info.staked = voterStakedFromSate.staked;
