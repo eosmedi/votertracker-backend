@@ -634,7 +634,7 @@ function getVoterInfo(voter, missLoadCache){
   	// var voterStakedFromSate = voterStakeState[voter];
   	if(cacheData && voterStakedFromSate){
         var voterStakedEos = cacheData.voter_info.staked;
-        // make sure stake is negative
+        // make sure stake is  not negative
 		if(voterStakedFromSate && voterStakedFromSate.staked > 0){
 			// var voterTotalStaked = voterStakedFromSate.cpu + voterStakedFromSate.net;
 			// cacheData.voter_info.staked = voterTotalStaked * 10000;
@@ -658,9 +658,12 @@ function getVoterInfo(voter, missLoadCache){
           }
 
          //  var stakedFromSate = voterStakeState[proxyVoter];
-			 var stakedEos = parseInt(proxyVoterInfo.voter_info.staked);
+             var stakedEos = parseInt(proxyVoterInfo.voter_info.staked);
+             
+             // make sure stake is  not negative
+             
 			 var voterStakedFromSate = getVoterStakedFromLocalState(proxyVoter);
-			 if(voterStakedFromSate){
+			 if(voterStakedFromSate && voterStakedFromSate.staked > 0){
 				stakedEos = voterStakedFromSate.staked;
 			 }
 
