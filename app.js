@@ -958,10 +958,10 @@ function getProxyTotalVotes(voter){
                 return;
             }
 
-				// var stakedFromSate = voterStakeState[proxyVoter];
-				var stakedFromSate = getVoterStakedFromLocalState(proxyVoter);
+            // var stakedFromSate = voterStakeState[proxyVoter];
+            var stakedFromSate = getVoterStakedFromLocalState(proxyVoter);
             var stakedEos = parseInt(proxyVoterInfo.voter_info.staked);
-            if(stakedFromSate){
+            if(stakedFromSate &&  stakedFromSate.staked > 0){
                //  var totalStaked = stakedFromSate.cpu + stakedFromSate.net;
                 stakedEos = stakedFromSate.staked;
             }
