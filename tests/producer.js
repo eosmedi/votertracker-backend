@@ -1,6 +1,6 @@
 var EosApi = require('eosjs-api');
 var eos = EosApi({
-    httpEndpoint: "https://api.eosmedi.com",
+    httpEndpoint: config.httpEndPoint,
     logger: {
         error: null,
         log: null
