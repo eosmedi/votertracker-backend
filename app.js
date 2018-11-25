@@ -20,7 +20,6 @@ var TelegramBoter = require('./lib/bot.js');
 var producerRankRecorder = require('./lib/producerRankHistory.js');
 
 var botter = new TelegramBoter(server);
-
 // setInterval(() => {
 //     botter.notify({
 //         producer: 'eosfishrocks',
