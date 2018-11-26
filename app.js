@@ -515,10 +515,13 @@ app.get('/getProducers', function(req, res, next){
   var page = req.query.p || 1;
   var size = req.query.size || 70;
 
+  console.log('getProducers')
+
   eos.getProducers({
       json: true,
       limit: 500
   }, (error, result) => {
+      console.log('getProducers end');
       if(!error){
           var allProducers = swapProducerVoters(result);
           var total = allProducers.length;
