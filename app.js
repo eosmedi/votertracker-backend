@@ -437,8 +437,9 @@ function swapProducerVoters(producers){
       
         try{
             var rankHistory = producerRanker.getRankHistory(row.owner);
-            row.history = rankHistory || [];
+            row.history = rankHistory;
         }catch(e){
+            row.history = [];
             console.log("row.history", e)
         }
 
