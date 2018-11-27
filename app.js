@@ -511,6 +511,9 @@ function loadProducers(){
 
 loadProducers();
 
+
+var cacheAllProducers = null;
+
 app.get('/getProducers', function(req, res, next){
   var page = req.query.p || 1;
   var size = req.query.size || 70;
@@ -521,7 +524,7 @@ app.get('/getProducers', function(req, res, next){
       json: true,
       limit: 500
   }, (error, result) => {
-      console.log('getProducers end');
+      console.log('getProducers end', result);
       if(!error){
           var allProducers = swapProducerVoters(result);
           var total = allProducers.length;
