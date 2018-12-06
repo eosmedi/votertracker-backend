@@ -19,6 +19,7 @@ var config = {
         stake_check_point_file: BASE_DIR+'delegatebw_fetched',
         bot_watcher: BASE_DIR+'bot_watcher.json',
         producer_hitory: BASE_DIR+'producer_hitory.json',
+        table_voters: BASE_DIR+'table_voters.json',
     }
 };
 

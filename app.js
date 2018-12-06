@@ -18,6 +18,10 @@ var EosApi = require('eosjs-api');
 var Promise = require('promise');
 var TelegramBoter = require('./lib/bot.js');
 var producerRankRecorder = require('./lib/producerRankHistory.js');
+var voterScanner = require('./lib/votersScanner.js');
+
+
+var ENABLE_SELFBUILD_STATE = false;
 
 var botter = new TelegramBoter(server);
 // setInterval(() => {
@@ -121,6 +125,7 @@ var stakedLogs = [];
 var stakeLogsLimit = 100;
 
 var producerRanker = new producerRankRecorder(votedProducers);
+var voterScannerRunner = new voterScanner(allVoters);
 
 
 function updateCurrencyStats(){
@@ -605,15 +610,28 @@ app.get('/tryRefreshVoterInfo', function(req, res, next){
   res.json(tryRefreshVoterInfo());
 });
 
+
+
+
 function getVoterStakedFromLocalState(voter){
-	var state = {};
-	var voterStakedFromSate = voterStakeState[voter];
-	if(voterStakedFromSate){
-		state = Object.assign(state, voterStakedFromSate);
-		var voterTotalStaked = voterStakedFromSate.total + voterStakedFromSate.to_others.total;
-		state.staked = voterTotalStaked * 10000;
-		return state;
-	}
+    if(ENABLE_SELFBUILD_STATE){
+        var state = {};
+        var voterStakedFromSate = voterStakeState[voter];
+        if(voterStakedFromSate){
+            state = Object.assign(state, voterStakedFromSate);
+            var voterTotalStaked = voterStakedFromSate.total + voterStakedFromSate.to_others.total;
+            state.staked = voterTotalStaked * 10000;
+            return state;
+        }
+    }else{
+        var voterStateIn = voterScannerRunner.getVoterState(voter);
+        if(voterStateIn){
+            console.log('voterStateIn', voterStateIn);
+            return {
+                staked: voterStateIn.staked
+            }
+        }
+    }
 }
 
 
