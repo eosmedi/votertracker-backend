@@ -628,7 +628,7 @@ function getVoterStakedFromLocalState(voter){
         if(voterStateIn){
             console.log('voterStateIn', voterStateIn);
             return {
-                staked: voterStateIn.staked
+                staked: parseInt(voterStateIn.staked)
             }
         }
     }
