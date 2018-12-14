@@ -19,11 +19,14 @@ var Promise = require('promise');
 var TelegramBoter = require('./lib/bot.js');
 var producerRankRecorder = require('./lib/producerRankHistory.js');
 var voterScanner = require('./lib/votersScanner.js');
+var VotersState = require('./lib/VotersState.js');
+
 
 
 var ENABLE_SELFBUILD_STATE = false;
 
 var botter = new TelegramBoter(server);
+var stater = new VotersState(config.lokijs, app);
 // setInterval(() => {
 //     botter.notify({
 //         producer: 'eosfishrocks',
