@@ -675,7 +675,7 @@ function getVoterInfo(voter, missLoadCache){
 
     var voteCurrentState = voterStater.getVoter(voter);
     if(cacheData && voteCurrentState){
-        cacheData.voter_info.staked = voteCurrentState.staked;
+        cacheData.voter_info.staked = parseInt(voteCurrentState.staked);
     }
 
     if(voterStater.isProxy(voter)){
@@ -695,7 +695,7 @@ function getVoterInfo(voter, missLoadCache){
             }
 
             proxyAllVoters.push(proxyVoter);
-            var stakedEos = row.staked;
+            var stakedEos = parseInt(row.staked);
             proxyStacked += stakedEos;
             allVotersProxy.push({
                 voter: proxyVoter,
