@@ -27,7 +27,7 @@ var config = {
 };
 
 
-lokijs.initDB(config.database.state, 10000000 * 1000);
+lokijs.initDB(config.database.state, 200 * 1000);
 
 module.exports = config;
 
