@@ -26,7 +26,7 @@ var VotersState = require('./lib/VotersState.js');
 var ENABLE_SELFBUILD_STATE = false;
 
 var botter = new TelegramBoter(server);
-var stater = new VotersState(config.lokijs, app);
+var voterStater = new VotersState(config.lokijs, app);
 // setInterval(() => {
 //     botter.notify({
 //         producer: 'eosfishrocks',
@@ -640,41 +640,80 @@ function getVoterStakedFromLocalState(voter){
 
 
 function getVoterInfo(voter, missLoadCache){
-  var cacheData = votersInfo[voter];
+    var cacheData = votersInfo[voter];
+    if(!missLoadCache && voterInfoIsTimeout(voter)){
+        updateVoterInfo(voter);
+    }
 
-  if(!missLoadCache && voterInfoIsTimeout(voter)){
-      updateVoterInfo(voter);
-  }
+    if(!cacheData){
+        needUpdateVoterTable[voter] = 1;
+    }
 
-  if(!cacheData){
-      needUpdateVoterTable[voter] = 1;
-  }
+    if(cacheData && snapshotData[cacheData.account_name]){
+        votersInfo[voter].snapshot = snapshotData[cacheData.account_name];
+        votersInfo[voter].eth = votersInfo[voter].snapshot.eth;
+    }
 
-  if(cacheData && snapshotData[cacheData.account_name]){
-      votersInfo[voter].snapshot = snapshotData[cacheData.account_name];
-      votersInfo[voter].eth = votersInfo[voter].snapshot.eth;
-  }
-
-  if(cacheData && allVoters[voter]){
-      votersInfo[voter].actions = [].concat(allVoters[voter]['actions']);
-  }
+    if(cacheData && allVoters[voter]){
+        votersInfo[voter].actions = [].concat(allVoters[voter]['actions']);
+    }
 
 
-  var voterStakedFromSate = getVoterStakedFromLocalState(voter);
-
-    // var voterStakedFromSate = voterStakeState[voter];
-    if(cacheData && voterStakedFromSate){
-        var voterStakedEos = cacheData.voter_info.staked;
-        // make sure stake is  not negative
-        if(voterStakedFromSate && voterStakedFromSate.staked > 0){
-            // var voterTotalStaked = voterStakedFromSate.cpu + voterStakedFromSate.net;
-            // cacheData.voter_info.staked = voterTotalStaked * 10000;
-            cacheData.voter_info.staked = voterStakedFromSate.staked;
+    if(false){
+        var voterStakedFromSate = getVoterStakedFromLocalState(voter);
+        // var voterStakedFromSate = voterStakeState[voter];
+        if(cacheData && voterStakedFromSate){
+            var voterStakedEos = cacheData.voter_info.staked;
+            // make sure stake is  not negative
+            if(voterStakedFromSate && voterStakedFromSate.staked > 0){
+                // var voterTotalStaked = voterStakedFromSate.cpu + voterStakedFromSate.net;
+                // cacheData.voter_info.staked = voterTotalStaked * 10000;
+                cacheData.voter_info.staked = voterStakedFromSate.staked;
+            }
         }
     }
 
-  var voterIsProxy = proxyVoters[voter];
-  if(voterIsProxy){
+    var voteCurrentState = voterStater.getVoter(voter);
+    if(cacheData && voteCurrentState){
+        cacheData.voter_info.staked = voteCurrentState.staked;
+    }
+
+    if(voterStater.isProxy(voter)){
+        var proxyStacked =  cacheData ? cacheData.voter_info.staked : 0;
+        var allVotersProxy = [];
+
+        var results = voterStater.getProxyVoters(voter);
+        var proxyAllVoters = [];
+
+        results.forEach((row) => {
+            var proxyVoter = row.owner;
+            var proxyVoterInfo = votersInfo[proxyVoter];
+            if(!proxyVoterInfo){
+                needUpdateVoterTable[proxyVoter] = 1;
+                console.log("proxyVoter info miss", proxyVoter, Date.now())
+                return;
+            }
+
+            proxyAllVoters.push(proxyVoter);
+            var stakedEos = row.staked;
+            proxyStacked += stakedEos;
+            allVotersProxy.push({
+                voter: proxyVoter,
+                staked: stakedEos,
+                timestamp: null
+            })
+        })
+
+        if(cacheData){
+            votersInfo[voter].proxy_voters = proxyAllVoters;
+            votersInfo[voter].all_proxy_voters = allVotersProxy;
+            votersInfo[voter].voter_info.staked = proxyStacked;
+        }
+    }
+    
+
+    var voterIsProxy = proxyVoters[voter];
+    if(voterIsProxy && false){
       var proxyStacked = 0;
       var proxyAllVoters =  Object.keys(proxyVoters[voter]["voters"]);
       var allVotersProxy = [];
@@ -719,13 +758,16 @@ function getVoterInfo(voter, missLoadCache){
           votersInfo[voter].all_proxy_voters = allVotersProxy;
           votersInfo[voter].voter_info.staked = proxyStacked;
       }
-  }
+    }
 
-  if(!cacheData){
-      console.log(cacheData, voter);
-  }
 
-  return votersInfo[voter];
+
+
+    if(!cacheData){
+        console.log(cacheData, voter);
+    }
+
+    return votersInfo[voter];
 }
 
 
