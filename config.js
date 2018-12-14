@@ -1,5 +1,6 @@
 var fs = require('fs');
 var BASE_DIR = __dirname+'/database/';
+const lokijs = require('./lib/lokijs.js');
 
 if(!fs.existsSync(BASE_DIR)){
     fs.mkdirSync(BASE_DIR);
@@ -7,7 +8,7 @@ if(!fs.existsSync(BASE_DIR)){
 
 var config = {
     elasticsearch: '127.0.0.1:9200',
-    httpEndPoint: 'http://127.0.0.1:28888',
+    httpEndPoint: 'https://geo.eosasia.one',
     database: {
         voters_info: BASE_DIR+"votersInfo.json",
         snapshot : BASE_DIR+'snapshot.json',
@@ -20,8 +21,13 @@ var config = {
         bot_watcher: BASE_DIR+'bot_watcher.json',
         producer_hitory: BASE_DIR+'producer_hitory.json',
         table_voters: BASE_DIR+'table_voters.json',
-    }
+        state: BASE_DIR+'state.json',
+    },
+    lokijs: lokijs
 };
+
+
+lokijs.initDB(config.database.state, 10000000 * 1000);
 
 module.exports = config;
 
